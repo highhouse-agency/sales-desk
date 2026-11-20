@@ -1,0 +1,95 @@
+{
+  "_note": "Training narrative, written plainly by the builder for the first training run. Sol owns the copy pass. Numbers appear only through metric references.",
+  "sales-pulse": {
+    "headline": "{{metric:sales-pulse.remaining_to_secure}} of {{metric:sales-pulse.unit_count.tracked}} units left to secure",
+    "summary": "Greta Voss reserved 1I on Sep 29. Paloma and Luc closed on Oct 1. Pace counts each unit when first secured; a later promesa adds nothing.",
+    "changes": [],
+    "attention": [
+      "{{metric:sales-pulse.overdue_steps}} active buyers have overdue next steps.",
+      "Confirm who sent the Sep 30 email from the shared Okafor address.",
+      "Ask Valeria and Mateo whether they still want their holds on 2G and 5H."
+    ],
+    "limitations": [],
+    "card_caption": "Patio Niebla sales, as of Oct 2."
+  },
+  "owner-brief": {
+    "headline": "{{metric:owner-brief.remaining_to_secure}} of {{metric:owner-brief.unit_count.tracked}} units left to secure",
+    "summary": "Greta Voss reserved 1I on Sep 29. Reserved and promesa units carry {{metric:owner-brief.secured_value}} in list value.",
+    "changes": [],
+    "attention": [
+      "Resolve Luc\u2019s referral credit."
+    ],
+    "limitations": [],
+    "card_caption": "Owner brief for Patio Niebla, as of Oct 2."
+  },
+  "demand-and-ads": {
+    "headline": "{{metric:demand-and-ads.campaign_buyers}} buyers with a campaign recorded at first contact",
+    "summary": "Campaigns spent {{metric:demand-and-ads.spend}} since Aug 24 for {{metric:demand-and-ads.platform_leads}} platform leads. No buyer first reached through a campaign has paid a deposit.",
+    "changes": [],
+    "attention": [
+      "Ines's form has a broken campaign tag. Check whether the saved source identifies the campaign."
+    ],
+    "limitations": [],
+    "card_caption": "Campaign spend and platform leads, Aug 24 to Oct 1. Platform leads are not matched buyers."
+  },
+  "partner-network": {
+    "headline": "{{metric:partner-network.partner_activity.active}} agents with recent conversations",
+    "summary": "{{metric:partner-network.accepted_referrals}} buyers have an accepted referring agent. Luc\u2019s referral credit is disputed.",
+    "changes": [],
+    "attention": [
+      "Clara Nieves referred Paloma. Clara has not joined a conversation since Aug 24. Consider a follow-up."
+    ],
+    "limitations": [],
+    "card_caption": "Agent activity across the Patio Niebla referral network, as of Oct 2."
+  },
+  "unit-interest": {
+    "headline": "Buyer interest since launch",
+    "summary": "1H has the most inquiries. Every penthouse in the J line is still available.",
+    "changes": [],
+    "attention": [],
+    "limitations": [],
+    "card_caption": "Recorded inquiries, tours, and holds for the tracked units, as of Oct 2."
+  },
+  "buyer-brief.B003": {
+    "headline": "Nora Patel: completed tour and lender timing",
+    "summary": "Nora completed a video tour of 4B on Sep 12. Her next step is a lender timing check due Oct 2. Graham Pike is the accepted referring agent.",
+    "changes": [],
+    "attention": [
+      "Confirm that 4B is still available before discussing a hold."
+    ],
+    "limitations": [],
+    "card_caption": "Visit preparation: unit interest, completed tours, and open questions."
+  },
+  "custom.spend-vs-closings": {
+    "headline": "Closed sales and campaign spend",
+    "summary": "Campaigns spent {{metric:custom.spend-vs-closings.spend}} for {{metric:custom.spend-vs-closings.platform_leads}} platform leads from Aug 24 to Oct 1. Closed deals with an accepted partner: {{metric:custom.spend-vs-closings.closings_by_partner.accepted}}. Spend is not allocated to partners. Cost per closing is unavailable.",
+    "changes": [],
+    "attention": [],
+    "limitations": [],
+    "card_caption": "Ad spend against closed deals by partner, Aug 24 to Oct 1."
+  },
+  "source-to-sale": {
+    "headline": "Source to sale",
+    "summary": "Which sources bring buyers through to a sale.",
+    "card_caption": "Source to sale",
+    "changes": [],
+    "attention": [],
+    "limitations": []
+  },
+  "closed-lost": {
+    "headline": "Closed Lost Insights",
+    "summary": "Why buyers stopped and how far they reached.",
+    "card_caption": "Closed Lost Insights",
+    "changes": [],
+    "attention": [],
+    "limitations": []
+  },
+  "buyer-segments": {
+    "headline": "Buyer Segment Insights",
+    "summary": "How buyer types move toward a purchase.",
+    "card_caption": "Buyer Segment Insights",
+    "changes": [],
+    "attention": [],
+    "limitations": []
+  }
+}

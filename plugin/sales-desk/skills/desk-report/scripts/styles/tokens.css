@@ -1,0 +1,79 @@
+/* Sales desk report tokens. Every color, type size, and spacing value lives here.
+   Editorial palette and typography. Shared by the dashboard and reports. */
+
+:root {
+  /* ---- page */
+  --page: #FFFFFF;             /* warm off-white */
+  --panel: #FAFAF8;            /* drawer surface */
+  --rule: #D9DAD6;             /* hairline */
+  --rule-strong: #A8AEA9;
+  --ink: #142329;              /* warm near-black */
+  --ink-2: #39464B;            /* secondary text */
+  --ink-3: #586367;            /* metadata, AA on the page */
+  --accent: #71532D;           /* focus, selection, and the one thing to act on */
+  --accent-wash: #F0E8DA;
+
+  /* ---- unit status: one warm ramp, plain to warmest. The status word always shows too. */
+  --st-available: #FFFFFF;
+  --st-available-line: #A8AEA9;
+  --st-held: #F1EBDD;
+  --st-reserved: #EDE4D4;
+  --st-promesa: #E6DCC8;
+  --st-sold: #E1D5C1;
+
+  /* ---- type */
+  --font-serif: "Marcellus", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-sans: "Pontano Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", Arial, sans-serif;
+  --font-mono: "Pontano Sans", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --fs-tag: 11px;
+  --fs-xs: 12px;
+  --fs-sm: 14px;
+  --fs-base: 16px;
+  --fs-md: 18px;
+  --fs-lg: 24px;
+  --fs-title: 34px;
+  --fs-number: 44px;
+  --fs-drawer: 30px;
+  --fs-close: 22px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --lh-tight: 1.1;
+  --lh-base: 1.55;
+  --track-tag: 0.08em;
+
+  /* ---- space */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 72px;
+  --gutter: 20px;
+  --col: 720px;
+  --tap: 44px;
+  --hair: 1px;
+  --cell-min: 76px;
+  --drawer-w: 440px;
+  --card-max: 480px;
+  --search-max: 360px;
+  --menu-min: 220px;
+  --chip: 12px;
+  --facts-label: 110px;
+  --rule-accent: 2px;
+
+  /* ---- motion: a slow fade only */
+  --fade: 240ms;
+  --ease: cubic-bezier(.25, .1, .25, 1);
+}
+
+@media (min-width: 720px) {
+  :root {
+    --gutter: 40px;
+    --fs-title: 44px;
+    --fs-number: 56px;
+    --sp-8: 96px;
+  }
+}
+/* Breakpoints cannot be custom properties in media queries: 720px is the one layout break. */

@@ -1,0 +1,15 @@
+Embedded Editorial fonts (Latin WOFF2), supplied by the PM from Google Fonts.
+
+Marcellus-Regular.woff2: Marcellus, regular (400).
+Copyright (c) 2012, Brian J. Bonislawsky DBA Astigmatic (AOETI),
+with Reserved Font Names "Marcellus".
+Full SIL Open Font License 1.1 and original notice: OFL-Marcellus.txt.
+
+PontanoSans.woff2: Pontano Sans, variable; embedded weight range 400 to 600.
+Copyright 2012 The Pontano Sans Project Authors
+(https://github.com/googlefonts/PontanoSansFont).
+Full SIL Open Font License 1.1 and original notice: OFL-PontanoSans.txt.
+
+Both font files are embedded as data URLs in pages and can be embedded in
+standalone cards through cardSvg(ctx, { fontCss: assets().fontCss }).
+No CDN or font request is needed at render time.

@@ -1,0 +1,19 @@
+campaign_id,campaign_name,week_start,week_end,spend,currency,platform_lead_count,source_link,property_id
+C101,Pacific Escape,2026-08-24,2026-08-30,900,USD,2,https://exports.patio-niebla.example/meta/2026-08-30,PN
+C102,Concrete and Shade,2026-08-24,2026-08-30,1800,USD,18,https://exports.patio-niebla.example/meta/2026-08-30,PN
+C103,Return to the Courtyard,2026-08-24,2026-08-30,0,USD,0,https://exports.patio-niebla.example/meta/2026-08-30,PN
+C101,Pacific Escape,2026-08-31,2026-09-06,900,USD,1,https://exports.patio-niebla.example/meta/2026-09-06,PN
+C102,Concrete and Shade,2026-08-31,2026-09-06,1800,USD,21,https://exports.patio-niebla.example/meta/2026-09-06,PN
+C103,Return to the Courtyard,2026-08-31,2026-09-06,0,USD,0,https://exports.patio-niebla.example/meta/2026-09-06,PN
+C101,Pacific Escape,2026-09-07,2026-09-13,900,USD,3,https://exports.patio-niebla.example/meta/2026-09-13,PN
+C102,Concrete and Shade,2026-09-07,2026-09-13,1800,USD,25,https://exports.patio-niebla.example/meta/2026-09-13,PN
+C103,Return to the Courtyard,2026-09-07,2026-09-13,600,USD,8,https://exports.patio-niebla.example/meta/2026-09-13,PN
+C101,Pacific Escape,2026-09-14,2026-09-20,900,USD,2,https://exports.patio-niebla.example/meta/2026-09-20,PN
+C102,Concrete and Shade,2026-09-14,2026-09-20,1800,USD,30,https://exports.patio-niebla.example/meta/2026-09-20,PN
+C103,Return to the Courtyard,2026-09-14,2026-09-20,600,USD,10,https://exports.patio-niebla.example/meta/2026-09-20,PN
+C101,Pacific Escape,2026-09-21,2026-09-27,900,USD,1,https://exports.patio-niebla.example/meta/2026-09-27,PN
+C102,Concrete and Shade,2026-09-21,2026-09-27,1800,USD,26,https://exports.patio-niebla.example/meta/2026-09-27,PN
+C103,Return to the Courtyard,2026-09-21,2026-09-27,600,USD,12,https://exports.patio-niebla.example/meta/2026-09-27,PN
+C101,Pacific Escape,2026-09-28,2026-10-01,514,USD,1,https://exports.patio-niebla.example/meta/2026-10-01,PN
+C102,Concrete and Shade,2026-09-28,2026-10-01,1028,USD,15,https://exports.patio-niebla.example/meta/2026-10-01,PN
+C103,Return to the Courtyard,2026-09-28,2026-10-01,343,USD,7,https://exports.patio-niebla.example/meta/2026-10-01,PN

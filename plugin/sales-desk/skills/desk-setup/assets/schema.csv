@@ -1,0 +1,156 @@
+tab,key,header,description
+Interactions,interaction_id,interaction_id,"Row ID, I followed by a number. Never reused."
+Interactions,timestamp,timestamp,"When the event happened, with the reporting time zone offset, or a date alone when the time is unknown."
+Interactions,logged_at,logged_at,When Claude wrote the row.
+Interactions,channel,channel,"Where the information came from: chat voice note, chat transcript, chat note, email, web form, or ad lead."
+Interactions,record_type,record_type,"touch (a real conversation), decision (a confirmation or ruling), or correction (fixes an earlier row)."
+Interactions,corrects_interaction_id,corrects_interaction_id,The row a correction fixes. Correction rows only.
+Interactions,person_id,person_id,"The buyer, by People ID."
+Interactions,partner_id,partner_id,"The referral partner, by Partners ID."
+Interactions,unit_id,unit_id,A specific unit named and confirmed.
+Interactions,summary,summary,"One neutral sentence of facts, with no contact details or quotes."
+Interactions,source_text,source_text,"The raw source: transcript, email, or screenshot transcription. Never published."
+Interactions,source_link,source_link,Drive link to the original file. Never published.
+Interactions,logged_by,logged_by,"Who logged the row: an operator name, or scheduled job for the morning run."
+Interactions,source_key,source_key,The source identity plus event position. Stops the same source from being logged twice.
+Interactions,stage,stage,A confirmed buyer stage change.
+Interactions,next_step,next_step,"The confirmed next step, short."
+Interactions,next_step_due,next_step_due,"Due date of the next step, YYYY-MM-DD."
+Interactions,unit_status,unit_status,A confirmed unit status change.
+Interactions,deposit_date,deposit_date,"Date a reservation deposit was confirmed paid, YYYY-MM-DD."
+Interactions,campaign_id,campaign_id,"Ad campaign ID, copied exactly from the lead."
+Interactions,ad_id,ad_id,"Ad ID, copied exactly from the lead."
+Interactions,utm_source,utm_source,Tracking value copied from the lead's link.
+Interactions,utm_medium,utm_medium,Tracking value copied from the lead's link.
+Interactions,utm_campaign,utm_campaign,Tracking value copied from the lead's link.
+Interactions,utm_content,utm_content,Tracking value copied from the lead's link.
+Interactions,utm_term,utm_term,Tracking value copied from the lead's link.
+Interactions,event,event,"What happened, from the event list: inquiry, tour_booked, hold_accepted, and so on."
+Interactions,unit_type,unit_type,A unit type the buyer asked about when no specific unit was named.
+Interactions,partner_role,partner_role,participant (the partner took part) or credited (only named as the referrer).
+Interactions,property_id,property_id,"The property, by Properties ID."
+Interactions,duplicate_person_id,duplicate_person_id,The duplicate ID on a confirmed same-person decision.
+Interactions,survivor_person_id,survivor_person_id,The ID that survives on a confirmed same-person decision.
+People,person_id,person_id,"Buyer ID, B followed by a number."
+People,name,name,"Full name, as supplied."
+People,email,email,"Email addresses, separated by semicolons. Never published."
+People,phone,phone,"Phone numbers with country code, separated by semicolons. Never published."
+People,first_channel,first_channel,"First contact channel: WhatsApp, email, phone, in person, form, Instagram. Source is separate; later note transport does not replace either."
+People,first_touch_date,first_touch_date,"Date of first contact, YYYY-MM-DD."
+People,referring_partner_id,referring_partner_id,"The accepted referral partner, set only after the sales lead confirms it."
+People,notes,notes,For people. Claude never writes here.
+People,home_city,home_city,"Home city, only if the buyer said it."
+People,home_country,home_country,"Home country, only if the buyer said it."
+People,instagram_handle,instagram_handle,"Instagram handle, stored after confirmation. Never published."
+People,lead_temperature,lead_temperature,"cold, warm, hot, or not a fit. Readiness, kept apart from stage. Claude suggests it with a reason; the sales lead confirms."
+People,temperature_reason,temperature_reason,"One short line on why the temperature was set, from confirmed facts."
+People,interest_type,interest_type,"villa, condo, or both, as the buyer said."
+People,budget_range,budget_range,"The buyer's stated budget range. Empty means unknown, never unqualified. Never published."
+People,purchase_timing,purchase_timing,"When the buyer expects to buy, in their words (for example 0 to 6 months)."
+People,intended_use,intended_use,"vacation home, rental or investment, both, other. Older own use/rental/investment/mix values remain readable; do not bulk rewrite."
+People,preferred_channel,preferred_channel,"How the buyer prefers to be contacted: email, phone, WhatsApp, or Instagram."
+People,marketing_permission,marketing_permission,yes or no: the buyer agreed to receive marketing. Empty means not asked.
+People,owner,owner,Who owns this buyer: one name from the task_owners setting. Claude confirms it with whoever logs and never writes a guess.
+People,lead_id,lead_id,"Stable public lead ID OCN-YYMMDD-###, from confirmed first contact in America/Mexico_City; sequence unique per local day. Never replace person_id."
+People,source,source,"Where the lead came from: Meta ad, website, ClickAdvisor, referral partner, walk-in, friend or family, other."
+People,ad,ad,Ad ID or Meta lead ID when known; copied literally.
+People,likelihood_override,likelihood_override,Confirmed likelihood percent 0 to 100; blank means use the calculated likelihood.
+People,override_reason,override_reason,"Reason for likelihood override, including who set it. The next confirmed logged event can move it again."
+People,budget_flag,budget_flag,"Confirmed budget mismatch with the villas requested, based only on available Units prices; blank when none or unknown."
+Partners,partner_id,partner_id,"Partner ID, P followed by a number."
+Partners,name,name,Full name.
+Partners,relationship,relationship,"Who they are and how the sales lead knows them, in plain words."
+Partners,commission_terms,commission_terms,The agreed terms in the agreement's own words. Never published.
+Partners,last_partner_touch,last_partner_touch,Formula: the latest conversation with this partner. Claude never writes here.
+Partners,commission_kind,commission_kind,percent or fixed. Only for agreed terms.
+Partners,commission_rate,commission_rate,The agreed percent or fixed USD amount.
+Partners,commission_note,commission_note,Notes on the terms. Never published.
+Partners,commission_exceptions,commission_exceptions,Buyer-specific exceptions to the standard terms.
+Partners,instagram_handle,instagram_handle,"Instagram handle, stored after confirmation. Never published."
+Units,unit_id,unit_id,"The unit's name, such as 4B."
+Units,type,type,"Unit type, such as two bedroom."
+Units,size,size,Interior area.
+Units,size_unit,size_unit,m2 or sq ft.
+Units,list_price,list_price,List price.
+Units,currency,currency,USD.
+Units,status,status,"available, held, investor held, reserved, promesa signed, or sold."
+Units,holder_person_id,holder_person_id,"The buyer holding the unit, by People ID."
+Units,deposit_date,deposit_date,"Date the deposit was confirmed paid, YYYY-MM-DD."
+Units,listed_date,listed_date,"Date the unit went on sale, YYYY-MM-DD."
+Units,property_id,property_id,"The property, by Properties ID."
+Units,square_footage,square_footage,Legacy optional square footage. Preserve existing values; never infer a conversion.
+Units,size_m2,size_m2,Interior area in square meters. Preserve supplied measurements; derive a missing counterpart with 1 m2 = 10.7639 ft2. Leave both blank when no area is supplied.
+Units,size_ft2,size_ft2,Interior area in square feet. Preserve supplied measurements; derive a missing counterpart with 1 m2 = 10.7639 ft2. Leave both blank when no area is supplied.
+Campaigns,campaign_id,campaign_id,Ad campaign ID.
+Campaigns,campaign_name,campaign_name,Campaign name as shown in Ads Manager.
+Campaigns,week_start,week_start,"First day of the week, YYYY-MM-DD."
+Campaigns,week_end,week_end,"Last day of the week covered, YYYY-MM-DD."
+Campaigns,spend,spend,Spend for the week.
+Campaigns,currency,currency,USD.
+Campaigns,platform_lead_count,platform_lead_count,Leads Meta reported for the week. Blank means unknown.
+Campaigns,source_link,source_link,Link to the export the numbers came from.
+Campaigns,property_id,property_id,"The property, by Properties ID."
+Pipeline,person_id,person_id,"The buyer, by People ID."
+Pipeline,stage,stage,"The buyer's current stage from confirmed facts: lead, contact and discovery, presentation, tour, unit selection, reservation, under contract, closed, or a side outcome (on hold, long-term nurture, lost)."
+Pipeline,last_touch,last_touch,Formula: the latest conversation with this buyer. Claude never writes here.
+Pipeline,next_step,next_step,The current next step.
+Pipeline,next_step_due,next_step_due,"Due date of the next step, YYYY-MM-DD."
+Pipeline,days_since_last_touch,days_since_last_touch,Formula: days since the latest conversation. Claude never writes here.
+Pipeline,notes,notes,For people. Claude never writes here.
+Pipeline,stage_override,stage_override,Stage set only after an authorized operator confirms the override and reason; the next confirmed event can move it again.
+Pipeline,stage_override_reason,stage_override_reason,Confirmed reason and operator for stage override; the next confirmed event can move it again.
+Review,review_id,review_id,"Review item ID, R followed by a number."
+Review,interaction_id,interaction_id,The row the question is about.
+Review,source_key,source_key,The source the question is about.
+Review,reason,reason,"Why it needs a person, from the review reason list."
+Review,candidate_ids,candidate_ids,"Possible matches, separated by semicolons."
+Review,question,question,"The question, in one plain sentence."
+Review,status,status,open or resolved.
+Review,resolved_by,resolved_by,Who answered it.
+Review,resolved_at,resolved_at,When it was answered.
+Review,resolution_interaction_id,resolution_interaction_id,The row that holds the answer.
+Tasks,task_id,task_id,"Task ID, T followed by a number. Never reused."
+Tasks,person_id,person_id,"The buyer the task is about, by People ID. Empty for a task about a partner or the desk."
+Tasks,partner_id,partner_id,"The partner the task is about, by Partners ID, if any."
+Tasks,task,task,"What to do, short, with no contact details."
+Tasks,owner,owner,Who does it: one name from the task_owners setting.
+Tasks,due_date,due_date,"Due date, YYYY-MM-DD."
+Tasks,due_time,due_time,"Due time, HH:MM in the reporting time zone. Empty for a task due any time that day."
+Tasks,status,status,"open, done, or cancelled."
+Tasks,calendar_event_id,calendar_event_id,The event on the shared task calendar. Empty until the event exists.
+Tasks,created_by,created_by,Who created or assigned the task.
+Tasks,created_at,created_at,"When the task was created, with the offset."
+Tasks,opened_interaction_id,opened_interaction_id,The Interactions row that records the task being created.
+Tasks,closed_by,closed_by,Who marked it done or cancelled.
+Tasks,closed_at,closed_at,"When it was closed, with the offset."
+Tasks,closed_interaction_id,closed_interaction_id,The Interactions row that records the task being closed.
+Tasks,property_id,property_id,"The property, by Properties ID."
+Properties,property_id,property_id,"Short property code, such as PN."
+Properties,name,name,Property name.
+Properties,sales_launch_date,sales_launch_date,"Date sales opened, YYYY-MM-DD."
+Properties,instagram_account,instagram_account,The property's Instagram account.
+Properties,ad_account,ad_account,The Meta ad account.
+Properties,website_form,website_form,The website inquiry form.
+Properties,total_units,total_units,Units in the whole development.
+Properties,historical_sold_count,historical_sold_count,Units sold before tracking started.
+Intake,source,source,meta_lead_form or instagram_dm.
+Intake,received_at,received_at,When the row arrived.
+Intake,property_id,property_id,"The property, when the route knows it."
+Intake,lead_id,lead_id,Meta lead ID.
+Intake,created_time,created_time,When Meta created the lead.
+Intake,full_name,full_name,Name from the Meta form.
+Intake,email,email,Email from the Meta form.
+Intake,phone_number,phone_number,Phone from the Meta form.
+Intake,campaign_id,campaign_id,"Campaign ID, when supplied."
+Intake,ad_id,ad_id,"Ad ID, when supplied."
+Intake,form_id,form_id,Meta form ID.
+Intake,page_id,page_id,Facebook Page ID.
+Intake,message_id,message_id,Instagram message ID.
+Intake,conversation_id,conversation_id,Instagram conversation ID.
+Intake,account,account,The project's Instagram account.
+Intake,handle,handle,The other person's handle.
+Intake,direction,direction,in or out.
+Intake,timestamp,timestamp,When the message was sent.
+Intake,text,text,Message text.
+Interactions,workflow_json,workflow_json,Versioned private buyer/villa/nurture/alert payload. Blank on older rows. Excluded from published reports and offline cache.
+Interactions,lost_reason,lost_reason,"Confirmed category for lost/on hold: price, timing, financing, location, chose another property, unresponsive, other. Blank if not recorded."

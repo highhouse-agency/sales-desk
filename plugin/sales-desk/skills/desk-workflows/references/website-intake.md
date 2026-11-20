@@ -1,0 +1,24 @@
+# Structured website intake, policy and adapter contract
+
+Target design: form data arrives directly in structured Intake when the actual form provider supports reliable delivery. Email is an optional fallback. The real provider, payload and destination are unverified. `scripts/intake.cjs` is a tested pure planner; it performs no writes, reservations, Calendar changes, acknowledgments or enrollment.
+
+## Standing policy, disabled by default
+
+Activation requires desk-owner approval recorded with version `website-v1`, approved_by/date, Freddie as the new-buyer owner, verified roster, reporting timezone/property, adapter/source evidence and connected replay/failure tests. The approved product direction assigns genuinely new website leads to Freddie with a next-business-day response; activation is distinct from agreement on that direction. Until activated, retain the source and preview discretionary writes normally. No new Settings rows or Intake fields are added by Codex.
+
+Only supplied identifiable fields may be retained. Stable submission_id must be namespaced by provider/form if its native ID is not globally unique. received_at carries an offset; the adapter supplies received_date verified in the reporting timezone. Schema uses the existing Intake source layout plus an add-only migration proposal for website fields at connected setup, not a guessed rewrite of a provider-owned table. Unknown fields, credentials and secrets are excluded. Contact data stays in the private Sheet/source retention, never reports, local fixtures or private workflow_json.
+
+Exact unique email or verified international phone can match a buyer. Shared/contradictory matches, missing identity/property/date, conflicting/unconfigured ownership or unverified attribution need Review. Supplied names alone never authorize an automatic match. For a new identified buyer with supplied name: create Lead, owner Freddie, `source=website`, `first_channel=form`, supplied first-contact date, one inquiry and next-business-day response proposal. Existing buyer: preserve confirmed source/owner/stage and all nonblank `source`, `first_channel`, `first_touch_date` values; fill acquisition blanks only with confirmed first-contact facts in chat. Read legacy walk-in / web form channel values as source facts without rewriting them. For the website planner, add one inquiry touch and follow-up proposal for their confirmed owner. No automatic Hot score, referrer credit, guessed due time or marketing enrollment.
+
+The pure planner intentionally proposes the task. The activated writer must materialize that task under the exact standing policy, reusing an already verified same-submission task and checking existing open work. Manual desk chat still previews and confirms. Qualification questions and personal outreach details remain configurable, not fabricated.
+
+## Durable adapter obligations
+
+1. Retain each inbound submission durably before acknowledging receipt to the provider. Do not edit connector-owned raw rows from the desk. Keep a separate processing ledger keyed by stable source identity.
+2. Re-read matching/ownership/source immediately before committing. Atomically claim the episode using a durable transactional store; a plain Sheet append is not a lock.
+3. Record stable effect keys: `form:<identity>:person`, `:e1`, `:followup`. Append history first; read back all current-record/task/calendar effects. Mark only reconciled/read-back effects `verified`. Replays finish missing effects rather than adding rows. On unknown outcomes reconcile by source key and effect identity before retry. If identity/ownership changed, pause in Review.
+4. Acknowledgment is a separate `:ack` job/status on the same submission. Eligibility is not sending. Sender/Reply-To and neutral content must be approved and verified, no marketing enrollment implied. Identity Review or partial CRM processing must not be mislabeled as successful CRM processing; an eligible neutral acknowledgment is tracked independently. A prepared/unknown receipt requires provider reconciliation; never resend blindly. Record actual provider message ID before saying sent.
+5. Approved marketing permission and content/track are additional gates. A supplied yes is not sufficient for enrollment. Existing opt-out wins. Reuse nurture cancellation guards and human handoff.
+6. Training has sending off. Prove new/returning buyer, duplicate delivery, conflicting contact, crash after history, failed task/Calendar update and uncertain send against actual providers before enabling live delivery. Local mocks cannot certify the adapter.
+
+The existing Meta/Instagram Intake schema is not evidence of a website connection. The connected setup owner must append only needed website columns and Schema rows after inspecting the real payload. No migration is needed for the dashboard journey history, which reuses Interactions.workflow_json already installed in training.

@@ -1,0 +1,17 @@
+{
+  "name": "ocn-sales-desk",
+  "owner": {
+    "name": "Andie Wilber"
+  },
+  "metadata": {
+    "description": "Marketplace for the OCN sales desk plugin. Add this repo in Customize, Plugins, Add marketplace, and turn on Sync automatically."
+  },
+  "plugins": [
+    {
+      "name": "sales-desk",
+      "source": "./plugin/sales-desk",
+      "description": "Keeps the condo sales desk's records in a Google Sheet: logging, review, tasks, reports, and a setup wizard.",
+      "version": "1.0.1"
+    }
+  ]
+}

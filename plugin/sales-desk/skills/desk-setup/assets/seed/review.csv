@@ -1,0 +1,5 @@
+review_id,interaction_id,source_key,reason,candidate_ids,question,status,resolved_by,resolved_at,resolution_interaction_id
+R001,I142,seed:email-okafor-ambiguous-0930,identity uncertainty,B011;B012,Ada and Chidi share an email address. Which of them sent the message signed A?,open,,,
+R002,I143,seed:form-ines-broken-0930,missing attribution,C101;C102;C103,Ines's form came in with a broken ad code (C10?). Do we know which ad she came from?,open,,,
+R003,I144,seed:email-amelie-variant-0930,identity uncertainty,B028,Did Amelie Gagnon send the email from amelie.gagne@inbox.example or was it someone else?,open,,,
+R004,I168,seed:report-preview-i168,referral conflict,B014;P008;P002,Who gets referral credit for Luc: Miriam or Diego?,open,,,

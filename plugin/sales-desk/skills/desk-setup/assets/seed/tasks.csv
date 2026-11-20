@@ -1,0 +1,37 @@
+task_id,person_id,partner_id,task,owner,due_date,due_time,status,calendar_event_id,created_by,created_at,opened_interaction_id,closed_by,closed_at,closed_interaction_id,property_id
+T001,B001,,Ask video date after wrap,Carmen,2026-10-02,,open,,Carmen,2026-10-01T18:31:00-06:00,,,,,PN
+T002,B002,,Confirm current 5I availability,Carmen,2026-10-02,,open,,Carmen,2026-10-01T18:31:00-06:00,,,,,PN
+T003,B003,,Check lender timing,Carmen,2026-10-02,,open,,Carmen,2026-10-01T18:31:00-06:00,,,,,PN
+T004,B004,,Discuss winter shade with Diego,Carmen,2026-10-02,,open,,Carmen,2026-10-01T08:19:00-06:00,,,,,PN
+T005,B005,,Ask Diego for accountant introduction,Carmen,2026-10-02,,open,,Carmen,2026-10-01T18:31:00-06:00,,,,,PN
+T006,B006,,Offer October video slot,Carmen,2026-10-02,,open,,Carmen,2026-09-24T20:51:00-06:00,,,,,PN
+T007,B007,,Offer October video slot,Carmen,2026-10-02,,open,,Carmen,2026-09-24T20:51:00-06:00,,,,,PN
+T008,B008,,Ask February dates,Carmen,2026-10-05,,open,,Carmen,2026-09-24T20:51:00-06:00,,,,,PN
+T009,B009,,Send terrace drainage photos,Carmen,2026-10-05,,open,,Carmen,2026-09-24T20:51:00-06:00,,,,,PN
+T010,B010,,Get 5J stair count,Carmen,2026-10-02,,open,,Carmen,2026-10-01T21:06:00-06:00,,,,,PN
+T011,B011,,Send fee example to household,Carmen,2026-09-22,,open,,Carmen,2026-09-15T20:16:00-06:00,,,,,PN
+T012,B012,,Send fee example to household,Carmen,2026-09-22,,open,,Carmen,2026-09-15T20:16:00-06:00,,,,,PN
+T013,B013,,Ask Elena for 30% installment receipt,Bea,2026-10-02,,done,,Carmen,2026-10-01T23:11:00-06:00,,Bea,2026-10-01T23:45:00-06:00,I171,PN
+T014,B014,,Ask Elena for 30% installment receipt,Bea,2026-10-02,,done,,Carmen,2026-09-26T22:24:00-06:00,,Bea,2026-10-01T23:45:00-06:00,I172,PN
+T015,B015,,Check signature before deadline,Bea,2026-10-03,,open,,Carmen,2026-09-30T16:38:00-06:00,,,,,PN
+T016,B016,,Arrange promesa signature,Carmen,2026-10-05,,open,,Carmen,2026-09-25T19:56:00-06:00,,,,,PN
+T017,B017,,Arrange promesa signature,Carmen,2026-10-09,,open,,Carmen,2026-09-29T18:43:00-06:00,,,,,PN
+T018,B018,,Check spouse stair decision,Carmen,2026-10-02,,open,,Carmen,2026-09-27T21:13:00-06:00,,,,,PN
+T019,B019,,Check cash-flow decision,Carmen,2026-10-02,,open,,Carmen,2026-09-22T19:47:00-06:00,,,,,PN
+T020,B020,,Ask Gabriel for Spanish sample,Bea,2026-10-02,,open,,Carmen,2026-10-01T08:00:00-06:00,,,,,PN
+T021,B021,,Ask post-handover video window,Carmen,2026-10-07,,open,,Carmen,2026-09-29T20:02:00-06:00,,,,,PN
+T022,B022,,Ask lease decision date,Carmen,2026-10-07,,open,,Carmen,2026-09-30T08:11:00-06:00,,,,,PN
+T023,B023,,Send supplier list,Carmen,2026-09-15,,open,,Carmen,2026-09-08T22:06:00-06:00,,,,,PN
+T024,B024,,Ask winter dates,Carmen,2026-09-23,,open,,Carmen,2026-09-16T18:16:00-06:00,,,,,PN
+T025,B026,,Measure sample cupboard,Carmen,2026-09-23,,open,,Carmen,2026-09-17T08:47:00-06:00,,,,,PN
+T026,B027,,Ask post-delivery video window,Carmen,2026-10-05,,open,,Carmen,2026-09-28T22:13:00-06:00,,,,,PN
+T027,B028,,Send desk-wall measurements,Carmen,2026-09-24,,open,,Carmen,2026-09-17T08:26:00-06:00,,,,,PN
+T028,B029,,Send pool-system explanation,Carmen,2026-09-17,,open,,Carmen,2026-09-10T21:57:00-06:00,,,,,PN
+T029,B031,,Offer next Saturday video,Carmen,2026-09-17,,open,,Carmen,2026-09-10T21:57:00-06:00,,,,,PN
+T030,B032,,Ask tenant about evening hours,Carmen,2026-09-23,,open,,Carmen,2026-09-16T22:37:00-06:00,,,,,PN
+T031,B034,,Collect Gabriel estimate inputs,Carmen,2026-09-17,,open,,Carmen,2026-09-10T21:57:00-06:00,,,,,PN
+T032,B035,,Ask spring-break dates,Carmen,2026-09-18,,open,,Carmen,2026-09-11T22:27:00-06:00,,,,,PN
+T033,B036,,Ask October site-visit date,Carmen,2026-09-29,,open,,Carmen,2026-09-22T21:44:00-06:00,,,,,PN
+T034,B037,,Send 4H shade sequence,Carmen,2026-09-21,,open,,Carmen,2026-09-14T18:12:00-06:00,,,,,PN
+T035,B038,,Send Elena transfer pack,Carmen,2026-09-29,,open,,Carmen,2026-09-22T21:44:00-06:00,,,,,PN
+T036,B040,,Ask winter calendar,Carmen,2026-10-06,,open,,Carmen,2026-09-29T20:02:00-06:00,,,,,PN

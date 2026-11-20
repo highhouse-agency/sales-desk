@@ -1,0 +1,21 @@
+unit_id,type,size,size_unit,list_price,currency,status,holder_person_id,deposit_date,listed_date,property_id,square_footage,size_m2,size_ft2
+1G,two bedroom,96,m2,445000,USD,sold,B013,2026-09-18,2026-08-24,PN,,96,1033
+1H,two bedroom corner,104,m2,485000,USD,available,,,2026-08-24,PN,,104,1119
+1I,two bedroom penthouse,118,m2,595000,USD,reserved,B017,2026-09-29,2026-08-24,PN,,118,1270
+1J,three bedroom penthouse,142,m2,725000,USD,available,,,2026-08-24,PN,,142,1528
+2G,two bedroom,96,m2,445000,USD,held,B018,,2026-08-24,PN,,96,1033
+2H,two bedroom corner,104,m2,485000,USD,sold,B014,2026-09-20,2026-08-24,PN,,104,1119
+2I,two bedroom penthouse,118,m2,595000,USD,available,,,2026-08-24,PN,,118,1270
+2J,three bedroom penthouse,142,m2,725000,USD,available,,,2026-08-24,PN,,142,1528
+3G,two bedroom,96,m2,445000,USD,available,,,2026-08-24,PN,,96,1033
+3H,two bedroom corner,104,m2,485000,USD,reserved,B015,2026-09-23,2026-08-24,PN,,104,1119
+3I,two bedroom penthouse,118,m2,595000,USD,available,,,2026-08-24,PN,,118,1270
+3J,three bedroom penthouse,142,m2,725000,USD,available,,,2026-08-24,PN,,142,1528
+4B,one bedroom plunge,68,m2,310000,USD,available,,,2026-08-24,PN,,68,732
+4H,two bedroom corner,104,m2,485000,USD,available,,,2026-08-24,PN,,104,1119
+4I,two bedroom penthouse,118,m2,595000,USD,available,,,2026-08-24,PN,,118,1270
+4J,three bedroom penthouse,142,m2,725000,USD,investor held,,,2026-08-24,PN,,142,1528
+5G,two bedroom,96,m2,445000,USD,reserved,B016,2026-09-25,2026-08-24,PN,,96,1033
+5H,two bedroom corner,104,m2,485000,USD,held,B019,,2026-08-24,PN,,104,1119
+5I,two bedroom penthouse,118,m2,595000,USD,available,,,2026-08-24,PN,,118,1270
+5J,three bedroom penthouse,142,m2,725000,USD,available,,,2026-08-24,PN,,142,1528

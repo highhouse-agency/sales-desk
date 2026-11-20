@@ -1,0 +1,1998 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Desk Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Marcellus&amp;family=Pontano+Sans:wght@400;500;600;700&amp;display=swap">
+<style>
+/* Layout: one calm working column that opens on Today. Phone: header, a quiet section strip, the list.
+   Desktop: the same column with the sections as a slim rail on the left. Tokens follow the desk's report
+   system (reports/styles/tokens.css), extended with a dark theme. */
+:root{
+  --page:#F6F2EA; --panel:#FBF8F2; --rule:#E2DACD; --rule-strong:#C9BFAF;
+  --ink:#221E1A; --ink-2:#4A433B; --ink-3:#6E655A;
+  --accent:#4C5A3A; --accent-ink:#FBF8F2; --accent-wash:#E4E6DA; --accent-line:#A7B096;
+  --late:#9A3B22; --late-wash:#F3E3D9; --skel:#EAE3D7; --press:#EDE6DA;
+  --st-available:#F6F2EA; --st-available-line:#C9BFAF; --st-held:#EFE5D3; --st-reserved:#EAD4AF; --st-promesa:#E2BD86; --st-sold:#D29C5E; --st-ink:#221E1A;
+  --font-serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --font-sans:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",Arial,sans-serif;
+  --tap:44px; --ease:cubic-bezier(.25,.1,.25,1); --quick:180ms;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#171512; --panel:#201D19; --rule:#2F2B25; --rule-strong:#4A443B;
+  --ink:#EEE8DD; --ink-2:#C4BBAE; --ink-3:#978D80;
+  --accent:#B3C493; --accent-ink:#171512; --accent-wash:#262C1F; --accent-line:#55613F;
+  --late:#EC9B80; --late-wash:#36221A; --skel:#26231E; --press:#2A2620;
+  --st-available:#1C1A16; --st-available-line:#4A443B; --st-held:#2E2920; --st-reserved:#3D3222; --st-promesa:#4E3C22; --st-sold:#664A27; --st-ink:#EEE8DD;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#171512; --panel:#201D19; --rule:#2F2B25; --rule-strong:#4A443B;
+  --ink:#EEE8DD; --ink-2:#C4BBAE; --ink-3:#978D80;
+  --accent:#B3C493; --accent-ink:#171512; --accent-wash:#262C1F; --accent-line:#55613F;
+  --late:#EC9B80; --late-wash:#36221A; --skel:#26231E; --press:#2A2620;
+  --st-available:#1C1A16; --st-available-line:#4A443B; --st-held:#2E2920; --st-reserved:#3D3222; --st-promesa:#4E3C22; --st-sold:#664A27; --st-ink:#EEE8DD;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:400 15px/1.5 var(--font-sans);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+.app{max-width:1040px;margin:0 auto;padding-inline:16px;padding-block:8px 112px}
+@media (min-width:720px){.app{padding-inline:32px;padding-block:20px 112px}}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:56px}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand-line{font-size:14px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand-line b{font-weight:600;color:var(--ink)}
+.fresh{display:flex;align-items:center;gap:2px;font-size:13px;color:var(--ink-3);min-height:24px;flex-wrap:wrap}
+.fresh.bad{color:var(--late)}
+.you{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-3);flex-shrink:0}
+.select{appearance:none;-webkit-appearance:none;background:transparent;border:1px solid transparent;border-radius:10px;min-height:var(--tap);padding:0 26px 0 10px;font-size:15px;font-weight:500;color:var(--ink);cursor:pointer;
+  background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);
+  background-position:right 12px center,right 7px center;background-size:5px 5px,5px 5px;background-repeat:no-repeat;max-width:100%}
+.select:hover{border-color:var(--rule)}
+.select.empty{color:var(--accent)}
+
+/* section strip, then rail on desktop */
+.shell{display:block}
+.nav{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;margin-inline:-16px;padding-inline:8px;border-bottom:1px solid var(--rule)}
+.nav::-webkit-scrollbar{display:none}
+@media (max-width:959px){.nav.more{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 40px),transparent)}}
+.nav button{flex:0 0 auto;background:none;border:0;border-bottom:2px solid transparent;min-height:var(--tap);padding:0 10px;font-size:14px;font-weight:500;color:var(--ink-3);cursor:pointer;white-space:nowrap;border-radius:0}
+.nav button:hover{color:var(--ink)}
+.nav button[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+.nav .n{font-weight:400;margin-left:6px;font-variant-numeric:tabular-nums;color:var(--ink-3)}
+main{min-width:0;padding-top:24px}
+@media (min-width:720px){.nav{margin-inline:-32px;padding-inline:24px}}
+@media (min-width:960px){
+  .shell{display:grid;grid-template-columns:176px minmax(0,680px);gap:56px;align-items:start;justify-content:center}
+  .nav{flex-direction:column;position:sticky;top:24px;margin:24px 0 0;padding:0;border:0;overflow:visible}
+  .nav button{display:flex;justify-content:space-between;align-items:center;border:0;border-radius:10px;padding:0 12px;min-height:40px}
+  .nav button:hover{background:var(--press)}
+  .nav button[aria-current="page"]{background:var(--accent-wash)}
+  .top{max-width:912px;margin-inline:auto}
+}
+
+/* type */
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+h1{font:400 40px/1.05 var(--font-serif);letter-spacing:-.005em;margin:0;text-wrap:balance}
+@media (min-width:720px){h1{font-size:48px}}
+.lede{margin:6px 0 0;font-size:16px;color:var(--ink-2);text-wrap:pretty}
+.lede .next{display:block;color:var(--ink-3);font-size:15px;margin-top:2px}
+.note{margin:0;font-size:14px;color:var(--ink-3);text-wrap:pretty}
+.notes{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.notes:empty{display:none}
+.callout{border:1px solid var(--rule);border-radius:12px;background:var(--panel);padding:14px 16px;font-size:14px;color:var(--ink-2);display:flex;flex-direction:column;gap:10px}
+.callout.bad{border-color:var(--late);color:var(--ink)}
+.callout b{color:var(--ink);font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+
+/* rows */
+.list{margin-top:20px;border-top:1px solid var(--rule)}
+.list:empty{display:none}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:12px;align-items:center;padding-block:12px;border-bottom:1px solid var(--rule)}
+.main{min-width:0}
+.title{font-size:16px;font-weight:500;line-height:1.35;overflow-wrap:anywhere;text-wrap:pretty}
+.title .buyer{color:var(--ink-2);font-weight:400}
+.why{font-size:14px;color:var(--ink-3);margin-top:2px;overflow-wrap:anywhere}
+.why.late{color:var(--late)}
+.acts{display:flex;align-items:center;gap:2px}
+.row-msg{grid-column:1/-1;margin-top:6px;display:flex;flex-wrap:wrap;align-items:center;column-gap:4px}
+.nw{white-space:nowrap}
+.lbl{font-weight:600;color:var(--ink)}
+.gone{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--rule-strong);font-weight:400}
+.gone .buyer{color:var(--ink-3)}
+.faint{color:var(--ink-3);font-weight:400}
+.faint .buyer{color:var(--ink-3)}
+.state{font-size:14px;color:var(--ink-3);padding-inline:12px;min-height:var(--tap);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.state.ok{color:var(--accent)}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+@media (prefers-reduced-motion:no-preference){.state .dot{animation:pulse 1s var(--ease) infinite}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:var(--tap);min-width:var(--tap);padding:0 16px;border-radius:22px;border:1px solid var(--rule-strong);background:transparent;color:var(--ink);font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;user-select:none;-webkit-user-select:none}
+.btn:disabled{opacity:.45;cursor:default}
+.done{color:var(--accent);border-color:var(--accent-line)}
+
+
+.quiet{border-color:transparent;color:var(--ink-2)}
+.icon{padding:0;width:var(--tap);border-color:transparent;color:var(--ink-3)}
+.icon svg{width:18px;height:18px;fill:currentColor}
+.icon[aria-expanded="true"]{background:var(--press);color:var(--ink)}
+.link{background:none;border:0;padding:0 4px;min-height:var(--tap);color:var(--accent);font-weight:600;cursor:pointer;font-size:inherit}
+.chip{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 14px;border-radius:22px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);font-size:14px;font-weight:500;cursor:pointer;white-space:nowrap}
+.chip.quiet{background:transparent;border-color:transparent;color:var(--ink-3)}
+
+.chip.likely{border-color:var(--accent-line);color:var(--accent)}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-wash)}
+@media (hover:hover){
+  .btn:not(:disabled):hover,.chip:hover{background:var(--press)}
+  .done:not(:disabled):hover{background:var(--accent-wash)}
+
+
+  .link:hover{text-decoration:underline}
+}
+.btn:not(:disabled):active,.chip:active{transform:scale(.97)}
+@media (prefers-reduced-motion:no-preference){.btn,.chip{transition:background-color var(--quick) var(--ease),transform 90ms var(--ease),border-color var(--quick) var(--ease)}}
+
+/* inline panels */
+.panel{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:12px}
+.panel-label{font-size:13px;font-weight:600;color:var(--ink-2);width:100%}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;font-weight:600;color:var(--ink-2);min-width:0}
+.input{width:100%;min-height:var(--tap);border:1px solid var(--rule-strong);border-radius:10px;background:var(--panel);padding:8px 12px;font-size:16px;font-weight:400;color:var(--ink)}
+.input::placeholder{color:var(--ink-3)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:10px;width:100%}
+
+.msg{font-size:14px;color:var(--ink-2)}
+.msg.bad{color:var(--late)}
+.msg.ok{color:var(--accent)}
+.msg:empty{display:none}
+.stack{display:flex;flex-direction:column;align-items:stretch;gap:12px;width:100%}
+
+
+/* coming up + new task */
+.more-toggle{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:28px;min-height:var(--tap);background:none;border:0;border-bottom:1px solid var(--rule);padding:0;cursor:pointer;color:var(--ink)}
+.more-toggle .h{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.more-toggle .n{font-variant-numeric:tabular-nums;color:var(--ink-3);font-size:14px;display:inline-flex;align-items:center;gap:8px}
+.chev{width:8px;height:8px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(45deg) translateY(-2px)}
+.more-toggle[aria-expanded="true"] .chev{transform:rotate(-135deg) translateX(-2px)}
+@media (prefers-reduced-motion:no-preference){.chev{transition:transform var(--quick) var(--ease)}}
+#t-coming-list{margin-top:0;border-top:0}
+
+/* skeleton */
+.sk-row{display:grid;grid-template-columns:minmax(0,1fr) 72px;gap:12px;align-items:center;padding-block:16px;border-bottom:1px solid var(--rule)}
+.sk{height:12px;border-radius:6px;background:var(--skel)}
+.sk.t{width:68%;height:14px}.sk.s{width:36%;margin-top:8px}.sk.b{height:36px;border-radius:18px}
+@media (prefers-reduced-motion:no-preference){.sk{animation:pulse 1.6s var(--ease) infinite}}
+@keyframes pulse{50%{opacity:.5}}
+
+/* section heads inside views */
+.group-h{display:flex;justify-content:space-between;align-items:baseline;margin-top:28px;padding-bottom:6px;border-bottom:1px solid var(--rule)}
+.group-h h2{margin:0;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.group-h .n{font-size:14px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.group-h + .list{margin-top:0;border-top:0}
+.owner-btn{background:none;border:0;min-height:var(--tap);padding:0 4px 0 12px;font-size:14px;font-weight:500;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.owner-btn.none{color:var(--ink-3)}
+.owner-btn:disabled{cursor:default}
+@media (hover:hover){.owner-btn:not(:disabled):hover{color:var(--accent)}}
+.owner-txt{font-size:14px;color:var(--ink-3);white-space:nowrap}
+
+/* Pipeline keeps the stage board inside its own keyboard-scrollable region. */
+.pipeline-scroll{overflow-x:auto;overscroll-behavior-inline:contain;padding:4px 2px 14px;scrollbar-width:thin}
+.pipeline-board{display:flex;align-items:flex-start;gap:12px;width:max-content}
+.pipeline-lane{width:240px;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:12px}
+.pipeline-lane.side{background:transparent;border-style:dashed}
+.pipeline-lane h2{display:flex;justify-content:space-between;gap:12px;font:600 13px/1.5 var(--font-sans);margin:0 0 12px}
+.pipeline-lane h2 span{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.pipeline-lane .list{border:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.pipeline-lane .row{display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:12px;background:var(--page);border:1px solid var(--rule);border-left:3px solid var(--rule-strong);border-radius:8px}
+.pipeline-lane .row.hot{border-left-color:var(--late)}
+.pipeline-lane .row.warm{border-left-color:var(--accent)}
+.pipeline-lane .row.cold{border-left-color:var(--ink-3)}
+.likelihood{margin:8px 0;color:var(--ink-2);font-size:13px}.likelihood strong{font-variant-numeric:tabular-nums}
+.pipeline-lane .title{font-size:15px}.pipeline-lane .why{font-size:13px}
+.pipeline-lane .acts{justify-content:flex-start}.pipeline-lane .owner-btn{padding-left:0;white-space:normal;text-align:left}
+.pipeline-lane .panel{padding-top:8px}.pipeline-empty{margin:0;color:var(--ink-3);font-size:13px}
+
+/* inventory */
+.units{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:10px}
+.unit{border:1px solid var(--st-available-line);border-radius:10px;padding:10px 12px;background:var(--st-available);color:var(--st-ink);display:flex;flex-direction:column;gap:2px;min-width:0}
+.unit b{font-weight:600;font-size:15px;font-variant-numeric:tabular-nums}
+.unit span{font-size:13px;overflow-wrap:anywhere}
+.unit .who{color:var(--ink-2)}
+.unit.held{background:var(--st-held);border-color:transparent}
+.unit.reserved{background:var(--st-reserved);border-color:transparent}
+.unit.promesa{background:var(--st-promesa);border-color:transparent}
+.unit.sold{background:var(--st-sold);border-color:transparent}
+.tally{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:6px;font-size:15px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+
+/* page note */
+.toast{position:fixed;left:16px;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));margin:0 auto;max-width:520px;background:var(--ink);color:var(--page);border-radius:14px;padding:12px 8px 12px 16px;display:flex;align-items:center;gap:8px;font-size:14px;z-index:5}
+.toast p{margin:0;flex:1;min-width:0}
+.toast .link{color:var(--page)}
+@media (prefers-reduced-motion:no-preference){.toast:not([hidden]){animation:rise var(--quick) var(--ease)}}
+@keyframes rise{from{transform:translateY(8px);opacity:0}}
+dialog{width:min(720px,calc(100% - 24px));max-height:90vh;overflow:auto;border:1px solid var(--rule-strong);border-radius:16px;padding:24px;background:var(--page);color:var(--ink)}dialog::backdrop{background:#17151288}dialog h2{font:36px var(--font-serif);margin:0}dialog .grid,dialog .btns{margin-top:16px}dialog .field{margin-top:8px}dialog .btn{white-space:normal}dialog ul{padding-left:20px}dialog .input{min-width:0}#buyer-filters{margin-top:20px}.pipeline-board.list-mode{width:auto;display:block}.list-mode .pipeline-lane{width:100%;margin-top:12px}.pipeline-lane h2 button{white-space:normal;text-align:left}.unit{cursor:pointer;text-align:left}.title .link{text-align:left;padding:0;white-space:normal}#today-questions{margin-top:24px}#today-questions h2{font:28px var(--font-serif)}
+
+/* Quiet workspace, with locally available type and bounded content. */
+.buyer-actions{grid-column:1/-1;margin-top:8px}.buyer-actions summary{color:var(--ink-3);font-size:13px;cursor:pointer}.buyer-actions .btns{margin-top:8px}
+.wordmark{font:400 28px/1 Georgia,serif;letter-spacing:.22em;margin-bottom:8px}
+.workspace-tools{display:flex;gap:16px;align-items:end;margin:24px 0;flex-wrap:wrap}.workspace-tools .field{margin:0}.global-search{flex:1;min-width:180px}.input{max-width:100%}
+.villa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:16px 0 32px}.villa-tile{display:flex;flex-direction:column;gap:6px;text-align:left;min-width:0;padding:18px;border:1px solid var(--rule-strong);border-radius:8px;background:var(--panel);cursor:pointer;overflow-wrap:anywhere}.villa-tile.held{background:var(--st-held)}.villa-tile.reserved{background:var(--st-reserved)}.villa-tile.promesasigned{background:var(--st-promesa)}.villa-tile.sold{background:var(--st-sold)}.villa-tile span{font-size:13px;color:var(--ink-2)}
+.home-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin:24px 0}.stat{padding:12px 0;border-top:1px solid var(--rule)}.stat strong{display:block;font:32px/1.3 var(--font-serif)}.profile-section{margin:24px 0}.timeline{padding:0;list-style:none}.timeline li{padding:12px 0;border-top:1px solid var(--rule)}.timeline time{display:block;font-size:13px;color:var(--ink-3)}.profile-meta{display:flex;flex-wrap:wrap;gap:12px;color:var(--ink-2)}#search-results{padding:16px 0;border-block:1px solid var(--rule);max-height:50vh;overflow:auto}dialog{max-width: min(740px,calc(100vw - 32px));overflow-wrap:anywhere}main,section,.workspace-tools>*{min-width:0}body{overflow-wrap:anywhere}.pipeline-scroll{max-width:100%}.btns .btn{white-space:normal}table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:10px 6px;border-bottom:1px solid var(--rule);overflow-wrap:anywhere}.campaign-table{max-width:100%}.campaign-table table{table-layout:fixed;font-size:13px}.temperature{display:inline-block;border:1px solid var(--rule);border-radius:20px;padding:2px 9px;font-size:12px;background:var(--panel);color:var(--ink-2)}.temperature.hot{border-color:#bc8b76}.temperature.warm{border-color:#b19b78}.temperature.cold{border-color:#8d9caa}.temperature.neutral{color:var(--ink-3)}.legend-available{background:var(--st-available)}.legend-held{background:var(--st-held)}.legend-reserved{background:var(--st-reserved)}.legend-promesasigned{background:var(--st-promesa)}.legend-sold{background:var(--st-sold)} @media(max-width:520px){.top{align-items:start;flex-wrap:wrap}.you{font-size:12px;max-width:100%}.workspace-tools{gap:12px}.workspace-tools .global-search{flex-basis:100%}.app{padding-inline:16px}.grid{grid-template-columns:1fr}.head h2{max-width:100%}}
+
+
+.status-choices{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0}.status-pill{display:inline-flex;align-items:center;min-height:28px;padding:4px 10px;border:1px solid var(--rule-strong);border-radius:18px;font-size:12px;line-height:1.35;color:var(--ink-2);background:var(--panel);white-space:normal;text-align:left}.status-choices button{cursor:pointer;min-height:40px}.status-pill[aria-pressed="true"]{outline:2px solid var(--accent);outline-offset:2px}.status-qualification,.status-tour_requested,.status-handoff_offered,.status-requested{background:var(--st-held);border-color:#ad987d}.status-tour_booked,.status-tour_rescheduled,.status-handoff_accepted{background:var(--accent-wash);border-color:var(--accent-line)}.status-tour_preparation,.status-tour_completed,.status-tour_recap,.status-accepted{background:var(--st-reserved);border-color:#b29c73}.status-tour_cancelled,.status-tour_no_show,.status-release{background:var(--press);border-color:var(--rule-strong)}.sales-stage{background:var(--accent-wash);border-color:var(--accent-line)}.buyer-card{display:block}.buyer-card .profile-meta{margin-top:10px;gap:8px;align-items:center}.next-step{margin:12px 0 0;font-size:14px;color:var(--ink-2)}.next-step time{font-size:12px;color:var(--ink-3)}.profile-header{margin-top:16px}.profile-details>summary{cursor:pointer;color:var(--ink-2)}
+
+:root{--page:#FFFFFF;--panel:#FAFAF8;--rule:#D9DAD6;--rule-strong:#A8AEA9;--ink:#142329;--ink-2:#39464B;--ink-3:#586367;--skel:#E7E9E5;--press:#F0F1ED;--font-serif:"Marcellus",Georgia,serif;--font-sans:"Pontano Sans",Arial,sans-serif}
+body{font-size:16px;line-height:1.6}
+h1{font-size:55px;letter-spacing:-.045em;line-height:1.08}.lede{margin-top:18px;font-size:18px}.lede .next{margin-top:8px}
+.group-h{margin-top:40px;padding-bottom:12px}.group-h h2{font-family:var(--font-serif);font-size:25px;font-weight:400}
+@media(min-width:720px){h1{font-size:68px}}
+@media(min-width:960px){.nav button{border-radius:0;min-height:44px}.nav button[aria-current="page"]{background:transparent;box-shadow:inset 2px 0 var(--brand-gold)}}
+@media(max-width:520px){h1{font-size:48px}}
+
+/* Brand finish. Gold decoration and readable gold text use distinct tokens. */
+:root{color-scheme:light;--brand-gold:#BD9F74;--brand-band:#152D32;--accent:#71532D;--accent-ink:#152D32;--accent-line:#BD9F74;--accent-wash:#F0E8DA;
+--late:#963A2F;--late-wash:#F8EAE6;--hot:#963A2F;--hot-wash:#F8EAE6;--warm:#785212;--warm-wash:#F5ECD7;--cold:#315E7B;--cold-wash:#E8F0F5;--positive:#285F50;--positive-wash:#E5F0E9;
+--st-available:#FAF8F3;--st-available-line:#CEC3B1;--st-held:#F1EBDD;--st-reserved:#EDE4D4;--st-promesa:#E6DCC8;--st-sold:#E1D5C1;--st-ink:#192F33}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--page:#101D21;--panel:#19282D;--rule:#354449;--rule-strong:#526166;--ink:#F7F3E9;--ink-2:#D5D7CF;--ink-3:#B3BDB8;--accent:#D8BE94;--accent-ink:#152D32;--accent-wash:#343228;--accent-line:#BD9F74;--late:#FFB7A6;--late-wash:#422C29;--hot:#FFB7A6;--hot-wash:#422C29;--warm:#E6C482;--warm-wash:#3B3324;--cold:#ABD1ED;--cold-wash:#233947;--positive:#ABDBBE;--positive-wash:#233D32;--skel:#2A393E;--press:#2C3B40;--st-available:#19282D;--st-available-line:#526166;--st-held:#2C302C;--st-reserved:#33332B;--st-promesa:#38352C;--st-sold:#3D382D;--st-ink:#F7F3E9}}
+:root[data-theme="dark"]{color-scheme:dark;--page:#101D21;--panel:#19282D;--rule:#354449;--rule-strong:#526166;--ink:#F7F3E9;--ink-2:#D5D7CF;--ink-3:#B3BDB8;--accent:#D8BE94;--accent-ink:#152D32;--accent-wash:#343228;--accent-line:#BD9F74;--late:#FFB7A6;--late-wash:#422C29;--hot:#FFB7A6;--hot-wash:#422C29;--warm:#E6C482;--warm-wash:#3B3324;--cold:#ABD1ED;--cold-wash:#233947;--positive:#ABDBBE;--positive-wash:#233D32;--skel:#2A393E;--press:#2C3B40;--st-available:#19282D;--st-available-line:#526166;--st-held:#2C302C;--st-reserved:#33332B;--st-promesa:#38352C;--st-sold:#3D382D;--st-ink:#F7F3E9}
+.wordmark{height:28px;width:auto;object-fit:contain}.you{display:flex;flex-direction:column;align-items:flex-end;gap:2px}.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.brand .fresh{flex-basis:100%}.nav a{font-size:14px;text-decoration:none;color:var(--ink-3);padding:10px 12px;white-space:nowrap}.nav a:hover{color:var(--ink)}.nav a:focus-visible{outline:2px solid var(--accent)}.row details{min-width:0;grid-column:1/-1}.row summary{cursor:pointer;overflow-wrap:anywhere}
+
+.btn,.chip,.input,.callout,.villa-tile,.pipeline-lane,.pipeline-lane .row{border-radius:2px}
+/* The supplied white logo sits on the Editorial brand band in both themes. */
+.top{background:var(--brand-band);border-bottom:1px solid var(--brand-gold);padding:16px;color:#F7F3EA}
+.top .brand-line,.top .fresh,.top .you{color:#D6DED9}.top .brand-line b{color:#FAF7F0}.top .link{color:#D8BE94}
+.brand{flex-direction:row}.brand-line{white-space:normal;overflow:visible}.wordmark{margin:0;flex:none}
+.temperature.hot{color:var(--hot);background:var(--hot-wash);border-color:var(--hot)}
+.temperature.warm{color:var(--warm);background:var(--warm-wash);border-color:var(--warm)}
+.temperature.cold{color:var(--cold);background:var(--cold-wash);border-color:var(--cold)}
+html,body{max-width:100%;min-width:0}.app{width:100%;min-width:0}
+
+.section-title{font:400 25px/1.3 var(--font-serif);margin:24px 0 8px}
+#practice{background:transparent;border:1px solid var(--brand-gold);color:var(--brand-gold)}
+@media(min-width:960px){.workspace-tools{max-width:912px;margin-inline:auto}}
+@media(max-width:719px){.top{flex-wrap:wrap}.top .you{flex-basis:100%;align-items:flex-start;text-align:left}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand"><img class="wordmark" alt="OCN" width="63" height="28" src="data:image/webp;base64,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">
+      <div class="brand-line"><b id="desk">Sales desk</b> <span id="practice" class="temperature" hidden>Practice</span></div>
+      <div class="fresh" id="fresh" aria-live="polite"></div>
+    </div>
+    <div class="you"><span id="actor-name" hidden></span><time id="date"></time></div>
+  </header>
+  <div class="workspace-tools"><label class="field">View as<select class="input" id="home-role"><option value="freddie">Freddie</option><option value="alix">Alix</option><option value="leadership">Jackson</option></select></label><label class="field global-search">Search<input class="input" id="global-search" type="search" placeholder="Buyer, villa, task" autocomplete="off"></label><button class="chip" data-act="theme">Theme</button></div><div id="search-results" hidden aria-live="polite"></div>
+  <div class="shell">
+    <nav class="nav" id="nav" aria-label="Sections">
+      <button type="button" data-view="today" aria-current="page">Today<span class="n" id="n-today"></span></button>
+      <button type="button" data-view="pipeline">Pipeline<span class="n" id="n-pipeline"></span></button>
+      <button type="button" data-view="noowner">Unassigned<span class="n" id="n-noowner"></span></button>
+      <button type="button" data-view="questions">Claude’s questions<span class="n" id="n-questions"></span></button>
+      <button type="button" data-view="units">Inventory</button>
+      <button type="button" data-view="marketing">Marketing</button>
+      <button type="button" data-view="changes">Activity History</button>
+      <a href="https://claude.ai/artifact/TV84ciqcmciqDvhbQifK2n" target="_blank" rel="noopener noreferrer">Reporting</a>
+    </nav>
+    <main id="main">
+      <section id="v-today" aria-labelledby="h-today">
+        <div class="head">
+          <h1 id="h-today">Today</h1>
+          <label for="who"><span class="sr-only">Show for</span><select class="select" id="who"></select></label>
+        </div>
+        <p class="lede" id="t-lede"><span class="sk" style="display:block;width:40%;height:14px"></span></p>
+        <div class="notes" id="t-notes"></div>
+        <div id="role-home"></div><div id="today-questions"></div>
+        <h2 class="section-title" id="today-task-title">Tasks</h2><div class="list" id="t-list" role="list">
+          <div class="sk-row" aria-hidden="true"><div><div class="sk t"></div><div class="sk s"></div></div><div class="sk b"></div></div>
+          <div class="sk-row" aria-hidden="true"><div><div class="sk t" style="width:54%"></div><div class="sk s"></div></div><div class="sk b"></div></div>
+          <div class="sk-row" aria-hidden="true"><div><div class="sk t" style="width:74%"></div><div class="sk s" style="width:28%"></div></div><div class="sk b"></div></div>
+          <div class="sk-row" aria-hidden="true"><div><div class="sk t" style="width:48%"></div><div class="sk s"></div></div><div class="sk b"></div></div>
+        </div>
+        <div id="t-coming-wrap" hidden>
+          <button type="button" class="more-toggle" id="t-coming" aria-expanded="false" aria-controls="t-coming-list"><span class="h">Can wait</span><span class="n"><span id="t-coming-n"></span><span class="chev" aria-hidden="true"></span></span></button>
+          <div class="list" id="t-coming-list" role="list" hidden></div>
+        </div>
+        <div class="newtask" id="t-new"></div>
+      </section>
+      <section id="v-pipeline" aria-labelledby="h-pipeline" hidden>
+        <h1 id="h-pipeline">Pipeline</h1><div class="btns" id="p-presets" aria-label="Saved lists"></div><div class="grid" id="buyer-filters"><label class="field">Temperature<select class="input" id="buyer-temperature"></select></label><label class="field">Owner<select class="input" id="buyer-owner"></select></label><label class="field">Stage<select class="input" id="buyer-stage"></select></label><label class="field">Sort<select class="input" id="buyer-sort"><option value="current">Current order</option></select></label></div><div class="btns"><button class="chip" data-act="board">Board</button><button class="chip" data-act="list">List</button><button class="chip quiet" data-act="clear-filters">Clear</button></div><p class="lede" id="p-lede"></p><p class="note" id="p-help"></p><div class="pipeline-scroll" role="region" aria-label="Pipeline" aria-describedby="p-help" tabindex="0"><div class="pipeline-board" id="p-body"></div></div>
+      </section>
+      <section id="v-noowner" aria-labelledby="h-noowner" hidden>
+        <h1 id="h-noowner">Unassigned</h1><p class="lede" id="o-lede"></p><div class="list" id="o-list" role="list"></div>
+      </section>
+      <section id="v-questions" aria-labelledby="h-questions" hidden>
+        <h1 id="h-questions">Claude’s questions</h1><p class="lede" id="q-lede"></p><div class="list" id="q-list" role="list"></div>
+      </section>
+      <section id="v-units" aria-labelledby="h-units" hidden>
+        <h1 id="h-units">Inventory</h1><label class="field">Search<input class="input" id="u-search" type="search" placeholder="Search villas" autocomplete="off"></label><div class="btns"><div id="u-status"></div><div id="u-type"></div></div><div class="tally" id="u-tally"></div><div id="u-body"></div>
+      </section>
+      <section id="v-marketing" hidden><h1>Marketing</h1><div class="btns" id="m-presets" aria-label="Saved lists"></div><label class="field">Search<input class="input" id="m-search" type="search" placeholder="Search buyers" autocomplete="off"></label><div class="btns"><div id="m-temperature"></div><div id="m-nurture"></div></div><div id="m-body"></div></section>
+      <section id="v-changes" aria-labelledby="h-changes" hidden>
+        <h1 id="h-changes">Activity History</h1><label class="field">Search<input class="input" id="c-search" type="search" placeholder="Search activity" autocomplete="off"></label><div class="btns"><div id="c-buyer"></div><div id="c-team"></div><div id="c-kind"></div></div><div class="list" id="c-list" role="list"></div>
+      </section>
+    </main>
+  </div>
+</div>
+<dialog id="detail" aria-labelledby="detail-title"><div id="detail-content"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden><p id="toast-text"></p><button type="button" class="link" id="toast-close">OK</button></div>
+
+<script>
+// Filled in when the dashboard is published for a desk (desk-tasks skill, "The dashboard").
+const CONFIG = { sheetId: "__SHEET_ID__", deskName: "__DESK_NAME__" };
+const SHEETS = "Google Sheets";
+// Publisher must declare these capabilities in the host artifact manifest.
+const REQUIRED_CONNECTOR_TOOLS = {"Google Sheets":["get_values"]};
+const STAGES = ["lead","contact and discovery","presentation","tour","unit selection","reservation","under contract","closed"];
+const SIDE = ["on hold","long-term nurture","lost"];
+const OLD_STAGE = {"inquiry":"lead","qualified":"contact and discovery","reservation deposit":"reservation","promesa signed":"under contract"};
+const ID_KEY = {Interactions:"interaction_id",People:"person_id",Pipeline:"person_id",Tasks:"task_id",Units:"unit_id",Review:"review_id",Partners:"partner_id",Properties:"property_id"};
+const TABS = ["Settings","Schema","People","Pipeline","Tasks","Units","Review","Interactions","Partners","Properties","Campaigns"];
+// Only these columns are kept in this browser's cached view. Contact details, notes, and original messages never are.
+const KEEP = {
+  People: ["person_id","name","lead_temperature","owner","referring_partner_id","first_channel","first_touch_date","interest_type","purchase_timing","preferred_channel"],
+  Pipeline: ["person_id","stage","stage_override","last_touch","next_step","next_step_due"],
+  Tasks: ["task_id","person_id","partner_id","task","owner","due_date","due_time","status","calendar_event_id","property_id","opened_interaction_id","closed_interaction_id","created_by","closed_by","closed_at"],
+  Units: ["unit_id","type","size","size_unit","size_m2","size_ft2","list_price","currency","status","holder_person_id","property_id","deposit_date"],
+  Review: ["review_id","reason","question","status","candidate_ids","unit_id"],
+  Interactions: ["interaction_id","timestamp","logged_at","record_type","corrects_interaction_id","person_id","partner_id","summary","logged_by","event","next_step","stage","campaign_id"],
+  Partners: ["partner_id","name"],
+  Campaigns: ["campaign_id","campaign_name","week_start","week_end","spend","currency","platform_lead_count","property_id"],
+  Properties: ["property_id","name"]
+};
+
+let previewMode = false, authenticatedEmail = "", viewerName = "";
+let mcp = null, D = null, me = "", meGuessFirst = "", who = null, view = "today";
+const S = { open: null, coming: false, fresh: { state: "loading", at: null, err: null }, loading: false, scroll: {} };
+const store = { get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} } };
+// Acting identity is never restored from a browser choice.
+me = "";
+who = store.get("desk-dash-view");
+S.coming = store.get("desk-dash-coming") === "1";
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const letters = i => { let s = ""; i++; while (i > 0) { const m = (i - 1) % 26; s = String.fromCharCode(65 + m) + s; i = Math.floor((i - 1) / 26); } return s; };
+const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const WD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], WDL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const isDate = d => /^\d{4}-\d{2}-\d{2}/.test(d || "");
+const addDays = (d, n) => { const t = new Date(d.slice(0,10) + "T12:00:00Z"); t.setUTCDate(t.getUTCDate() + n); return t.toISOString().slice(0,10); };
+const dow = d => new Date(d.slice(0,10) + "T12:00:00Z").getUTCDay();
+const fmtDay = d => { if (!isDate(d)) return d || ""; const [y,m,dd] = d.slice(0,10).split("-").map(Number); return `${WD[dow(d)]}, ${MON[m-1]} ${dd}` + (String(y) !== today().slice(0,4) ? `, ${y}` : ""); };
+const fmtShort = d => { if (!isDate(d)) return d || ""; const [y,m,dd] = d.slice(0,10).split("-").map(Number); return MON[m-1] + " " + dd + (String(y) !== today().slice(0,4) ? ", " + y : ""); };
+const fmtTime = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); if (!m) return t || ""; const h = +m[1]; return `${(h % 12) || 12}:${m[2]} ${h < 12 ? "AM" : "PM"}`; };
+const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s || "";
+const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const wordRe = s => new RegExp("(?<![\\p{L}\\p{N}])" + escRe(s) + "(?![\\p{L}\\p{N}])", "iu");
+const noIds = s => String(s ?? "").replace(/\bOCN-\d{6}-\d{3}\b/g, "").replace(/\s*\((?:task\s+)?[TBRPI]\d{3,}\)/gi, "").replace(/\b(?:Task|Buyer|Question|Row)\s+[TBRPI]\d{3,}\b:?\s*/g, "").replace(/\b[TBRPI]\d{3,}\b/g, "").replace(/\s{2,}/g, " ").trim();
+const nwCodes = h => h.replace(/\b([A-Z]{1,2}-\d{1,3})\b/g, '<span class="nw">$1</span>');
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+const motionOK = () => !window.matchMedia || !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// ---------- time in the desk's reporting zone ----------
+function zoneParts(tz) {
+  const p = {}; new Intl.DateTimeFormat("en-US", {timeZone: tz, year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit", hour12:false, timeZoneName:"longOffset"})
+    .formatToParts(new Date()).forEach(x => p[x.type] = x.value);
+  let off = (p.timeZoneName || "GMT").replace("GMT", ""); if (!off) off = "+00:00";
+  const hh = p.hour === "24" ? "00" : p.hour;
+  return { date: `${p.year}-${p.month}-${p.day}`, time: `${hh}:${p.minute}:${p.second}`, off };
+}
+const tz = () => (D && D.settings.reporting_timezone) || Intl.DateTimeFormat().resolvedOptions().timeZone;
+const today = () => zoneParts(tz()).date;
+const nowIso = () => { const z = zoneParts(tz()); return `${z.date}T${z.time}${z.off}`; };
+const nowKey = () => { const z = zoneParts(tz()); return `${z.date}T${z.time}`; };
+const clock = d => { try { return new Intl.DateTimeFormat("en-US", {timeZone: tz(), hour: "numeric", minute: "2-digit"}).format(d); } catch (e) { return ""; } };
+const nextWorkDay = d => { let x = addDays(d, 1); while (dow(x) === 0 || dow(x) === 6) x = addDays(x, 1); return x; };
+const nextMonday = d => { let x = addDays(d, 1); while (dow(x) !== 1) x = addDays(x, 1); return x; };
+const dayWord = d => d === addDays(today(), 1) ? "tomorrow" : d === today() ? "today" : WDL[dow(d)];
+
+// ---------- reading the sheet ----------
+async function call(server, tool, input, opts) {
+  if (server !== SHEETS || tool !== "get_values") throw Error("Unavailable");
+  const r = await mcp.callTool(server, tool, input, opts);
+  return r && "payload" in r ? r.payload : r;
+}
+async function readTab(tab, fresh) {
+  const p = await call(SHEETS, "get_values", {spreadsheetId: CONFIG.sheetId, range: `${tab}!A1:CZ`}, fresh ? {cache: {refresh: true}} : undefined);
+  return (p && p.values) || [];
+}
+function shape(tab, values, schemaRows) {
+  const header = (values[0] || []).map(h => String(h).trim());
+  const rows = schemaRows.filter(r => r.tab === tab);
+  const col = {}, problems = [];
+  if (rows.length) {
+    for (const r of rows) {
+      const hits = header.reduce((a, h, i) => (h === r.header ? a.concat(i) : a), []);
+      if (hits.length === 1) col[r.key] = hits[0];
+      else if (hits.length > 1) problems.push(`${tab}: two columns are headed "${r.header}"`);
+    }
+  } else header.forEach((h, i) => { if (h) col[h] = i; });
+  const list = values.slice(1).map((v, i) => {
+    const o = { _row: i + 2 };
+    for (const [k, c] of Object.entries(col)) o[k] = v[c] == null ? "" : String(v[c]).trim();
+    return o;
+  }).filter(o => Object.keys(col).some(k => o[k]));
+  return { header, col, rows: list, problems };
+}
+const schemaOf = raw => (raw.Schema || []).slice(1).map(r => ({tab: r[0], key: r[1], header: r[2]})).filter(r => r.tab && r.key);
+function build(raw, missing, errors) {
+  if (!raw.Settings) throw (errors && errors.Settings) || {code: "upstream_error", message: "The Settings tab could not be read."};
+  const settings = {};
+  raw.Settings.slice(1).forEach(r => { if (r[0]) settings[String(r[0]).trim()] = r[1] == null ? "" : String(r[1]).trim(); });
+  const schemaRows = schemaOf(raw);
+  const T = {};
+  for (const t of TABS.slice(2)) if (raw[t]) T[t] = shape(t, raw[t], schemaRows);
+  const owners = (settings.task_owners || "").split(";").map(s => s.split("|").map(x => x.trim())).filter(a => a[0])
+    .map(([name, email]) => ({ name, email: email || "" }));
+  const operators = (settings.operators || "").split(";").map(s => s.trim()).filter(Boolean);
+  if (!owners.length) operators.forEach(n => owners.push({ name: n, email: "", color: "" }));
+  return { settings, T, owners, operators, raw, missing: missing || [], errors: errors || {}, loadedAt: new Date() };
+}
+// These are full-tab reads. Saved browser data never enters this fresh model.
+const VIEW_TABS = {
+  today: ['Tasks','People','Review','Pipeline','Interactions'],
+  pipeline: ['People','Pipeline','Tasks','Interactions'],
+  noowner: ['People','Pipeline','Tasks','Interactions'],
+  questions: ['Review','People','Interactions','Units'],
+  units: ['Units','People'],
+  changes: ['Interactions','People'],
+  marketing: ['People','Pipeline','Tasks','Interactions']
+};
+const OPTIONAL_TABS = {units:['Properties','Partners','Interactions'],changes:['Partners'],marketing:['Campaigns','Partners']};
+let freshRaw = {}, refreshRun = null, refreshQueued = false;
+const viewTimes = {};
+const requestedTabs = new Set();
+const timingNow = () => typeof performance !== 'undefined' ? performance.now() : Date.now();
+const pageStartedAt = timingNow();
+function reportTiming(kind, since, target) {
+  if (typeof console !== 'undefined' && console.info) console.info('[desk dashboard]', kind, {view: target, milliseconds: Math.round(timingNow() - since)});
+}
+async function load(fresh, target = view, extra = []) {
+  const required=new Set(['Settings','Schema',...(VIEW_TABS[target]||VIEW_TABS.today),...extra]);
+  const tabs = [...new Set([...required,...(OPTIONAL_TABS[target]||[])])];
+  const raw = {}, missing = [], errors = {};
+  const results = await Promise.allSettled(tabs.map(t => readTab(t, fresh)));
+  results.forEach((r, i) => { const t = tabs[i];
+    if (r.status === 'fulfilled') raw[t] = r.value;
+    else { delete raw[t]; errors[t] = r.reason; if (r.reason && r.reason.code === 'tool_error') missing.push(t); }
+  });
+  // A failed dependency must not give the view a new successful timestamp.
+  const failed=[...required].find(tab=>errors[tab]);
+  if (failed) throw errors[failed];
+  const next = build(raw, missing, errors);
+  freshRaw = raw;
+  return next;
+}
+
+// ---------- the cached last view (this browser only) ----------
+const CACHE_KEY = () => "desk-dash-cache:" + CONFIG.sheetId;
+function prune(raw) {
+  const out = { Settings: raw.Settings, Schema: raw.Schema }; const sr = schemaOf(raw);
+  for (const t of TABS.slice(2)) {
+    const v = raw[t]; if (!v || !v.length) continue;
+    const rows = sr.filter(r => r.tab === t), keep = KEEP[t] || [], ok = new Set();
+    (v[0] || []).forEach((h, i) => { h = String(h).trim(); const key = rows.length ? (rows.find(r => r.header === h) || {}).key : h; if (key && keep.includes(key)) ok.add(i); });
+    const body = v.slice(1);
+    out[t] = [v[0], ...body.map(r => r.map((c, i) => ok.has(i) ? c : ""))];
+  }
+  return out;
+}
+let cacheCopy=null;
+function saveCache() {
+  if(!D?.raw)return;
+  const previous=cacheCopy||readCache()||{raw:{},tabTimes:{}};
+  const incoming=prune(D.raw),now=Date.now();
+  const cached={at:now,raw:{...previous.raw,...incoming},tabTimes:{...previous.tabTimes}};
+  for(const tab of Object.keys(incoming))cached.tabTimes[tab]=now;
+  // Keep the most recent copy of each tab. Evict old tabs if browser storage fills.
+  while(true){
+    try{localStorage.setItem(CACHE_KEY(),JSON.stringify(cached));cacheCopy=cached;return;}
+    catch{
+      const candidates=Object.keys(cached.raw).filter(tab=>!['Settings','Schema'].includes(tab));
+      candidates.sort((a,b)=>JSON.stringify(cached.raw[b]).length-JSON.stringify(cached.raw[a]).length||(cached.tabTimes[a]||previous.at||0)-(cached.tabTimes[b]||previous.at||0));
+      if(!candidates.length)return;
+      delete cached.raw[candidates[0]];delete cached.tabTimes[candidates[0]];
+    }
+  }
+}
+function readCache() { try { const c = JSON.parse(store.get(CACHE_KEY()) || "null"); return c && c.raw && c.raw.Settings ? c : null; } catch (e) { return null; } }
+function cachedViewTime(c,target){
+ const times=(VIEW_TABS[target]||VIEW_TABS.today).filter(tab=>c.raw[tab]).map(tab=>c.tabTimes?.[tab]||c.at);
+ return times.length?Math.min(...times):c.at;
+}
+
+// ---------- the desk model ----------
+let MEMO = null;
+function model() {
+  if (MEMO && MEMO.D === D) return MEMO.M;
+  const T = D.T, people = {}, out = {};
+  (T.People ? T.People.rows : []).forEach(p => people[p.person_id] = { ...p, tasks: [] });
+  (T.Pipeline ? T.Pipeline.rows : []).forEach(r => { const p = people[r.person_id] || (people[r.person_id] = { person_id: r.person_id, name: "Buyer name missing", tasks: [] });
+    let st = (r.stage_override || r.stage || "").toLowerCase(); st = OLD_STAGE[st] || st;
+    Object.assign(p, { stage: st, stage_override: r.stage_override, stage_override_reason: r.stage_override_reason, next_step: r.next_step, next_step_due: r.next_step_due, last_touch: r.last_touch }); });
+  const partners = {}; (T.Partners ? T.Partners.rows : []).forEach(p => partners[p.partner_id] = p.name);
+  let tasks;
+  if (T.Tasks) tasks = T.Tasks.rows.filter(t => t.task_id).map(t => ({ ...t, status: (t.status || "open").toLowerCase(), live: true }));
+  else tasks = Object.values(people).filter(p => p.next_step && p.next_step !== "clear").map(p => ({ task_id: "x-" + p.person_id, person_id: p.person_id, task: p.next_step, owner: "", due_date: p.next_step_due, status: "open", live: false }));
+  tasks.forEach(t => { if (people[t.person_id] && t.status === "open") people[t.person_id].tasks.push(t); });
+  Object.values(people).forEach(p => p.tasks.sort(byDue));
+  // who has been working each buyer: the latest logged_by on their touch rows
+  const touches = (T.Interactions ? T.Interactions.rows : []).filter(r => r.record_type === "touch" && r.person_id && people[r.person_id]);
+  touches.sort((a, b) => (a.timestamp || a.logged_at || "").localeCompare(b.timestamp || b.logged_at || ""));
+  touches.forEach(r => { people[r.person_id].lastBy = r.logged_by; people[r.person_id].lastAt = r.timestamp || r.logged_at; });
+  out.people = people; out.partners = partners; out.tasks = tasks;
+  out.open = tasks.filter(t => t.status === "open");
+  out.active = p => STAGES.includes(p.stage) && p.stage !== "closed";
+  MEMO = { D, M: out };
+  return out;
+}
+const byDue = (a, b) => (a.due_date || "9999").localeCompare(b.due_date || "9999") || (a.due_time || "").localeCompare(b.due_time || "") || (a.task_id || "").localeCompare(b.task_id || "");
+const isOperator = n => !!n && D.operators.includes(n);
+const ownerOf = n => D.owners.find(o => o.name === n);
+const isTaskOwner = n => !!ownerOf(n);
+const firstName = n => String(n || "").trim().split(/\s+/)[0] || "";
+const roster = () => { const out = []; const add = n => { if (n && !out.includes(n)) out.push(n); }; D.owners.forEach(o => add(o.name)); D.operators.forEach(add); return out; };
+
+// ---------- words: task titles, calendar text, the Today rule ----------
+function stripOwner(text, names) {
+  for (const n of names.filter(Boolean)) for (const v of [n, firstName(n)]) {
+    const re = new RegExp("^\\s*" + escRe(v) + "\\s+to\\s+", "i"); if (re.test(text)) return text.replace(re, "");
+  }
+  return text;
+}
+const nameParts = full => String(full || "").split(/\s+/).filter(p => p.replace(/[^\p{L}]/gu, "").length > 1);
+const mentions = (text, full) => !!full && (wordRe(full).test(text) || nameParts(full).some(p => wordRe(p).test(text)));
+function withBuyer(text, full, append) {
+  if (!full) return text;
+  if (wordRe(full).test(text)) return text;
+  const parts = String(full).split(/\s+/).filter(Boolean), first = parts[0];
+  if (parts.length > 1 && first && wordRe(first).test(text)) return text.replace(wordRe(first), () => full);
+  if (mentions(text, full)) return text;
+  return append ? `${text} with ${full}` : text;
+}
+const buyerOf = t => { if (!t.person_id) return ""; const p = model().people[t.person_id]; return p && p.name && p.name !== t.person_id ? p.name : ""; };
+const partnerOf = t => t.partner_id ? (model().partners[t.partner_id] || "") : "";
+const taskText = (t, extra) => cap(stripOwner(noIds(t.task), [t.owner, extra]));
+const rowTitle = t => withBuyer(taskText(t), buyerOf(t), false);
+function shownName(t, title) { const n = buyerOf(t) || partnerOf(t); return n && !mentions(title, n) ? n : ""; }
+function namedOther(t) {
+  const c = [];
+  D.owners.forEach(o => c.push({ name: o.name, show: o.name }, { name: firstName(o.name), show: firstName(o.name) }));
+  if (D.settings.developer) c.push({ name: D.settings.developer, show: firstName(D.settings.developer) }, { name: firstName(D.settings.developer), show: firstName(D.settings.developer) });
+  if (D.settings.unit_status_reporter_name) c.push({ name: firstName(D.settings.unit_status_reporter_name), show: firstName(D.settings.unit_status_reporter_name) });
+  const own = [t.owner, firstName(t.owner)].filter(Boolean).map(s => s.toLowerCase());
+  let best = null;
+  for (const x of c) {
+    if (!x.name || own.includes(x.name.toLowerCase())) continue;
+    const m = wordRe(x.name).exec(t.task || ""); if (m && (!best || m.index < best.i)) best = { i: m.index, show: x.show };
+  }
+  return best ? best.show : "";
+}
+function eventWord(text) {
+  for (const [re, w] of [[/\b(tours?|touring)\b/i, "Tour"], [/\b(visits?|visiting)\b/i, "Visit"], [/\b(meetings?|meet)\b/i, "Meeting"], [/\b(calls?|calling)\b/i, "Call"]]) if (re.test(text || "")) return w;
+  return "";
+}
+const needsOtherWords = text => /\b(confirm\w*|approve\w*|approval|ask|check with)\b/i.test(text || "") || /\bget\b.*\bfrom\b/i.test(text || "");
+// Today: overdue, due today, and next-working-day tasks that need someone else first or are a tour, meeting, call, or visit.
+function classify(t, td, nwd) {
+  if (!isDate(t.due_date)) return null;
+  const d = t.due_date.slice(0, 10);
+  if (d < td) return { group: 0, reason: `Overdue since ${fmtDay(d)}`, late: true };
+  if (d === td) return { group: 1, reason: "Due today" + (t.due_time ? `, ${fmtTime(t.due_time)}` : "") };
+  if (d === nwd) {
+    const w = dayWord(nwd), other = namedOther(t), ev = eventWord(t.task);
+    if (other) return { group: 2, reason: `Due ${w}. Needs ${other} first.` };
+    if (ev) return { group: 2, reason: `${ev} ${w}. Confirm today.` };
+    if (needsOtherWords(t.task)) return { group: 2, reason: `Due ${w}. Needs someone else first.` };
+  }
+  return null;
+}
+function effWho() {
+  if (who === "all") return "all";
+  if (who && isTaskOwner(who)) return who;
+  if(homeRole==="alix" && /^Alix\b/i.test(me))return "all";
+  return me && isTaskOwner(me) ? me : "all";
+}
+function todayLists() {
+  const M = model(), td = today(), nwd = nextWorkDay(td), horizon = addDays(td, 7), w = effWho();
+  const mine = t => w === "all" || t.owner === w;
+  const tdy = [], coming = [], later = [];
+  for (const t of M.open) {
+    if (!mine(t)) continue;
+    const c = classify(t, td, nwd);
+    if (c) tdy.push({ t, c });
+    else if (isDate(t.due_date) && t.due_date.slice(0,10) > td && t.due_date.slice(0,10) <= horizon) coming.push({ t, c: { group: 9, reason: (t.due_date.slice(0,10) === addDays(td, 1) ? "Tomorrow" : fmtDay(t.due_date)) + (t.due_time ? `, ${fmtTime(t.due_time)}` : "") } });
+    else if (isDate(t.due_date) && t.due_date.slice(0,10) > td) later.push({ t });
+  }
+  const sorter = (a, b) => a.c.group - b.c.group || byDue(a.t, b.t) || (a.t.owner || "").localeCompare(b.t.owner || "");
+  tdy.sort(sorter); coming.sort(sorter); later.sort((a, b) => byDue(a.t, b.t));
+  return { tdy, coming, later, w };
+}
+
+// ---------- rendering helpers ----------
+const DOTS = `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>`;
+const tpl = document.createElement("template");
+const toNode = html => { tpl.innerHTML = html.trim(); return tpl.content.firstElementChild; };
+// Keyed update: unchanged rows stay put (focus, hover, and scroll survive), rows being edited are never replaced.
+function patchList(box, items) {
+  const have = new Map([...box.children].filter(n => n.dataset && n.dataset.key).map(n => [n.dataset.key, n]));
+  [...box.children].forEach(n => { if (!n.dataset || !n.dataset.key) n.remove(); });
+  let prev = null;
+  for (const it of items) {
+    let node = have.get(it.key);
+    if (!node || node.dataset.sig !== it.html) {
+      const fresh = toNode(it.html); fresh.dataset.key = it.key; fresh.dataset.sig = it.html;
+      if (node) morph(node, fresh); node = fresh;
+    }
+    have.delete(it.key);
+    const want = prev ? prev.nextSibling : box.firstChild;
+    if (node !== want) box.insertBefore(node, want);
+    prev = node;
+  }
+  for (const n of have.values()) n.remove();
+}
+function morph(oldNode, fresh) {
+  const h0 = oldNode.offsetHeight, hadFocus = oldNode.contains(document.activeElement);
+  const fa = hadFocus && document.activeElement.dataset ? document.activeElement.dataset.act : null;
+  oldNode.replaceWith(fresh);
+  if (hadFocus) { const f = (fa && fresh.querySelector(`[data-act="${fa}"]`)) || fresh.querySelector("button:not(:disabled),summary"); if (f) f.focus({ preventScroll: true }); }
+  if (!motionOK() || !h0) return;
+  const h1 = fresh.offsetHeight; if (Math.abs(h1 - h0) < 2) return;
+  fresh.style.overflow = "hidden";
+  const a = fresh.animate([{ height: h0 + "px" }, { height: h1 + "px" }], { duration: 180, easing: "cubic-bezier(.25,.1,.25,1)" });
+  a.onfinish = a.oncancel = () => { fresh.style.overflow = ""; };
+}
+function collapse(node) {
+  return new Promise(res => {
+    if (!node || !motionOK()) return res();
+    const h = node.offsetHeight; node.style.overflow = "hidden";
+    const a = node.animate([{ height: h + "px", opacity: 1 }, { height: "0px", opacity: 0, paddingTop: "0px", paddingBottom: "0px", borderBottomWidth: "0px" }], { duration: 200, easing: "cubic-bezier(.25,.1,.25,1)", fill: "forwards" });
+    a.onfinish = res; a.oncancel = res;
+  });
+}
+const rowNode = key => document.querySelector(`[data-key="${CSS.escape(key)}"]`);
+let toastTimer = null;
+function toast(text) {
+
+  $("toast-text").textContent = text; $("toast").hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { $("toast").hidden = true; }, 7000);
+}
+
+// ---------- page ----------
+function renderAll() {
+  resolveGuess();
+  $('global-search').placeholder=view==='units'?'Buyer, villa, task':'Buyer, task';
+  if(D)initializeHomeRole();
+  renderHeader();
+  if (!D) return;
+  renderNav();
+  renderView();
+  refreshLikelihoodDisplay();
+}
+function deskName() { return /^__/.test(CONFIG.deskName) || !CONFIG.deskName ? "Sales desk" : CONFIG.deskName; }
+function headerDate(){return new Date();}
+function updatedAge(at){
+ const minutes=Math.max(0,Math.floor((Date.now()-Number(new Date(at)))/60000));
+ if(minutes<1)return 'Updated just now';
+ if(minutes<60)return `Updated ${minutes} min ago`;
+ const hours=Math.floor(minutes/60);
+ if(hours<24)return `Updated ${hours} ${hours===1?'hour':'hours'} ago`;
+ const days=Math.floor(hours/24);return `Updated ${days} ${days===1?'day':'days'} ago`;
+}
+function renderHeader() {
+  $("desk").textContent = "Sales Desk";
+  $("practice").hidden = !(previewMode || D?.settings.mode === "training");
+  $("date").textContent = new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric'}).format(headerDate());
+  const f = S.fresh, el = $("fresh"); el.className = "fresh";
+  const age = f.at ? updatedAge(f.at) : '';
+  if (!D && f.state === 'loading') el.textContent = 'Loading';
+  else {
+    if (f.state === 'error') el.className = 'fresh bad';
+    const status = f.state === 'error' ? 'Refresh failed.' : '';
+    el.innerHTML = `${age}${age && status ? ' / ' : ''}${status} <button type="button" class="link" data-act="refresh" aria-label="Refresh">${f.state === 'error' ? 'Retry' : 'Refresh'}</button>`;
+  }
+  $("actor-name").textContent = me || viewerName;
+  $("actor-name").hidden = !$("actor-name").textContent;
+
+}
+let ageTimer=null;
+function scheduleAgeTick(){
+  clearTimeout(ageTimer);
+  ageTimer=setTimeout(()=>{if(D)renderHeader();scheduleAgeTick();},60000);
+  ageTimer?.unref?.();
+}
+function navEdge() { const n = $("nav"); n.classList.toggle("more", n.scrollWidth - n.clientWidth - n.scrollLeft > 4); }
+function renderNav() {
+  const L = todayLists(), n = L.tdy.length;
+  $("n-today").textContent = D.T.Tasks && D.T.People && n ? n : "";
+  $("n-pipeline").textContent = "";
+  $("n-noowner").textContent = D.T.People && D.T.Pipeline ? noOwnerList().length || "" : "";
+  $("n-questions").textContent = D.T.Review ? openQuestions().length || "" : "";
+  document.querySelectorAll("#nav button").forEach(b => { if (b.dataset.view === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  navEdge();
+}
+function renderView() {
+  for (const v of ["today","pipeline","noowner","questions","units","changes","marketing"]) $("v-" + v).hidden = v !== view;
+  if (view === "today") renderToday();
+  else if (view === "pipeline") renderPipeline();
+  else if (view === "noowner") renderNoOwner();
+  else if (view === "questions") renderQuestions();
+  else if (view === "units") renderUnits();
+  else if (view === "marketing") renderMarketing();
+  else renderChanges();
+}
+
+function renderToday() {
+  renderRoleHome();
+  $("today-task-title").hidden=leadershipView();
+  if(leadershipView()&&['People','Pipeline','Tasks','Review','Interactions'].every(t=>D.T[t])){ for(const id of ["today-questions","t-list","t-new","t-notes"]) $(id).innerHTML=""; $("t-coming-wrap").hidden=true; $("t-lede").textContent=""; return;}
+  renderPriorityQuestions();
+  const L = todayLists(), w = L.w, you = w !== "all" && w === me;
+  // view switch
+  const opts = [];
+  if (me && isTaskOwner(me)) opts.push(`<option value="">${esc(me)} (you)</option>`);
+  opts.push(`<option value="all">Everyone</option>`);
+  roster().filter(name => name !== me || !isTaskOwner(me)).forEach(name => opts.push(`<option value="${esc(name)}">${esc(name)}</option>`));
+  const sel = $("who"), sig = opts.join("");
+  if (sel.dataset.sig !== sig) { sel.innerHTML = sig; sel.dataset.sig = sig; }
+  sel.value = w === "all" ? "all" : (w === me ? "" : w);
+  $('t-notes').innerHTML='';
+  // lede
+  const count = L.tdy.length;
+  const whoWord = w === "all" ? "anyone" : you ? "you" : w;
+  let lede;
+  if (count) lede = esc(plural(count, "thing", "things") + (w === "all" ? " across the desk today." : you ? " today." : ` for ${w} today.`));
+  else {
+    const nx = L.later.concat(L.coming).sort((a, b) => byDue(a.t, b.t))[0];
+    lede = `No tasks for ${esc(whoWord)} today.` + (nx ? `<span class="next">Next: ${esc(rowTitle(nx.t))}, ${esc(fmtDay(nx.t.due_date))}${w === "all" && nx.t.owner ? ` (${esc(nx.t.owner)})` : ""}.</span>` : "");
+  }
+  $("t-lede").innerHTML = lede;
+  patchList($("t-list"), L.tdy.map(x => taskItem(x, "today", w)));
+  // coming up
+  const cn = L.coming.length;
+  $("t-coming-wrap").hidden = !L.coming.length;
+  $("t-coming-n").textContent = cn;
+  $("t-coming").setAttribute("aria-expanded", String(S.coming));
+  $("t-coming-list").hidden = !S.coming;
+  patchList($("t-coming-list"), L.coming.map(x => taskItem(x, "coming", w)));
+
+}
+function taskItem(x,list,w) {
+ const {t,c}=x,key='t:'+t.task_id,title=rowTitle(t),name=shownName(t,title);
+ return {key,lock:false,html:`<div class="row" role="listitem"><div class="main"><div class="title">${t.person_id?`<button class="link" data-act="buyer" data-person="${esc(t.person_id)}">${esc(displayText(title))}</button>`:`<details><summary>${esc(displayText(title))}</summary><p>${esc(displayText(partnerOf(t)||t.owner||'Unassigned'))}</p></details>`}${name?`<span class="buyer"> / ${esc(displayText(name))}</span>`:''}</div><div class="why${c.late?' late':''}">${esc(displayText((w==='all'?(t.owner||'Unassigned')+' / ':'')+c.reason))}</div></div></div>`};
+}
+function personRow(p,opts={}) {
+ const key='p:'+p.person_id,temp=p.lead_temperature?temperatureLabel(p.lead_temperature):'',t=p.tasks[0],due=t?.due_date||p.next_step_due,next=t?.task||(p.next_step&&p.next_step!=='clear'?p.next_step:'No task');
+ return {key,lock:false,html:`<div class="row ${esc(['hot','warm','cold'].includes(p.lead_temperature)?p.lead_temperature:'')} buyer-card" role="listitem"><div class="main"><div class="title"><button class="link" data-act="buyer" data-person="${esc(p.person_id)}">${esc(displayText(p.name))}</button></div><div class="profile-meta">${temp?`<span class="temperature ${esc(p.lead_temperature)}">${esc(temp)}</span>`:''}${salesStagePill(p.stage,!!opts.card)}<span>${esc(displayText(p.owner||'Unassigned'))}</span></div><div class="next-step">${esc(displayText(next))}${isDate(due)?`<br><time>${esc(fmtDay(due))}</time>`:''}</div></div>${likelihoodLine(p)}</div>`};
+}
+function pipelineGroups(all) {
+  const stages = [...STAGES, ...SIDE];
+  const order=buyerView.sort==="likelihood"?likelihoodOrder:(a,b)=>a.name.localeCompare(b.name);
+  const groups = stages.map(s => ({ s, list: all.filter(p => p.stage === s).sort(order) }));
+  const unknown = all.filter(p => !stages.includes(p.stage)).sort(order);
+  if (unknown.length) groups.push({ s: "needs a stage", list: unknown });
+  return groups;
+}
+function renderPipeline() {
+  renderBuyerFilters();
+  const M = model(), all = filteredBuyers();
+  const act = all.filter(M.active);
+  $("p-lede").textContent = `${plural(all.length, "buyer", "buyers")}. ${act.length} active.`;
+  const box = $("p-body");
+  if(!all.length&&buyerView.preset){box.innerHTML='<p>No buyers.</p>';box.dataset.sig="";return;}
+  const groups = buyerView.mode === "list" && buyerView.sort === "likelihood" ? [{s:"likelihood",list:[...all].sort(likelihoodOrder)}] : pipelineGroups(all).filter(g => buyerView.mode !== "list" || g.list.length);
+  const sig = buyerView.mode + groups.map(g => g.s).join("|");
+  box.className = "pipeline-board" + (buyerView.mode === "list" ? " list-mode" : "");
+  if (box.dataset.sig !== sig) {
+    box.innerHTML = groups.map((g, i) => `<section class="pipeline-lane${SIDE.includes(g.s) || g.s === "needs a stage" ? " side" : ""}" aria-labelledby="pg-title-${i}"><h2 id="pg-title-${i}">${g.s === "likelihood" ? `Likelihood <span id="pg-count-${i}"></span>` : `<button class="link" data-act="stage-filter" data-stage="${esc(g.s)}">${esc(g.s === "closed" ? "Closed" : cap(g.s))} <span id="pg-count-${i}"></span></button>`}</h2><div class="list" role="list" aria-labelledby="pg-title-${i}" id="pg-${i}"></div></section>`).join("");
+    box.dataset.sig = sig;
+  }
+  groups.forEach((g, i) => {
+    $("pg-count-" + i).textContent = g.list.length;
+    patchList($("pg-" + i), g.list.length ? g.list.map(p => personRow(p, { card: true })) : [{ key: "empty:" + g.s, lock: false, html: '<p class="pipeline-empty" role="listitem">No buyers</p>' }]);
+  });
+}
+function noOwnerList() {
+  const M = model();
+  return Object.values(M.people).filter(p => p.name && !p.owner && (M.active(p) || SIDE.slice(0, 2).includes(p.stage)));
+}
+function renderNoOwner() {
+  const list = noOwnerList().sort((a, b) => STAGES.indexOf(b.stage) - STAGES.indexOf(a.stage) || a.name.localeCompare(b.name));
+  $("o-lede").textContent = "";
+  patchList($("o-list"), list.map(p => {
+    const why = p.lastBy && isDate(p.lastAt) ? `Last logged by ${p.lastBy}, ${fmtDay(p.lastAt)}` : (isDate(p.last_touch) ? `Last talked ${fmtDay(p.last_touch)}` : "No conversation");
+    return personRow(p, { suggest: true, stage: true, why });
+  }));
+}
+function openQuestions() {
+ const reviews=D.T.Review ? D.T.Review.rows : [],open=reviews.filter(r=>(r.status||'').toLowerCase()==='open');
+ // Read-only proposals remain visible until the desk records or resolves the fact.
+ const gaps=D.T.Units&&!D.errors?.Units?DeskRules.inventoryReviewProposals(records('Units'),reviews).map(r=>({...r,review_id:'inventory-status:'+r.unit_id})):[];
+ return [...open,...gaps];
+}
+function renderQuestions() {
+ const q=openQuestions();$('q-lede').textContent='';patchList($('q-list'),q.length?q.map(r=>({key:'q:'+(r.review_id||r._row),lock:false,html:questionCard(r)})):[{key:'q:none',lock:false,html:'<p>No questions.</p>'}]);
+}
+function inventoryMatch(u,skip='') {
+ const v=tabViews.units,p=model().people[u.holder_person_id],partner=records('Partners').find(r=>r.partner_id===p?.referring_partner_id);
+ return searchMatches(v.search,u.unit_id,u.type,unitStatus(u),p?.name,partner?.name,records('Properties').find(p=>p.property_id===u.property_id)?.name,...DeskRules.effective(records('Interactions')).filter(r=>r.unit_id===u.unit_id).map(r=>r.summary))&&
+ (skip==='status'||v.status==='all'||unitStatus(u)===v.status)&&(skip==='type'||v.type==='all'||(u.type||'No type')===v.type);
+}
+function renderUnits() {
+ const M=model(),units=records('Units'),v=tabViews.units,list=units.filter(u=>inventoryMatch(u));
+ const word=s=>s==='held'?'On hold':s==='promesa signed'?'Under contract':cap(s||'No status');
+ tabFilter('u-status','Status',units.filter(u=>inventoryMatch(u,'status')),unitStatus,v.status,word,['available','held','investor held','reserved','promesa signed','sold'],units);
+ tabFilter('u-type','Type',units.filter(u=>inventoryMatch(u,'type')),u=>u.type||'No type',v.type,cap,[],units);
+ $('u-tally').innerHTML=units.length?`${units.length} villas / ${units.filter(u=>unitStatus(u)==='held').length} on hold`:'';
+ const properties=[...new Set(list.map(u=>u.property_id||''))];
+ $('u-body').innerHTML=properties.map(id=>{const property=records('Properties').find(p=>p.property_id===id),group=list.filter(u=>(u.property_id||'')===id);return `<section><div class="group-h"><h2>${esc(displayText(property?.name||'Villas'))}</h2><span>${group.length}</span></div><div class="villa-grid">${group.map(u=>`<button class="villa-tile ${esc(unitStatus(u).replace(/\W/g,''))}" data-act="villa" data-unit="${esc(u.unit_id)}"><strong>Villa ${esc(u.unit_id)}</strong><span>${esc(word(unitStatus(u)))}</span><span>${esc(displayText(u.type||'No type'))}</span><span>${esc(villaSize(u))}</span><span>${esc(villaPrice(u))}</span>${u.holder_person_id?`<span>${esc(displayText(M.people[u.holder_person_id]?.name||'No buyer'))}</span>`:''}</button>`).join('')}</div></section>`;}).join('')||'<p>No villas.</p>';
+}
+function rawChangeLines(r, M, tasksBy) {
+  const by = r.logged_by || "Someone", when = fmtDay(r.timestamp || r.logged_at);
+  const tk = id => { const t = tasksBy[id]; return t ? rowTitle(t) : ""; };
+  if (r.event === "task_opened") { const t = (D.T.Tasks ? D.T.Tasks.rows : []).find(x => x.opened_interaction_id === r.interaction_id); return [t ? rowTitle(t) : noIds(r.summary), `${t && t.owner && t.owner !== by ? `Given to ${t.owner}` : "Added"} by ${by} · ${when}`]; }
+  if (r.event === "task_done" || r.event === "task_cancelled") { const t = (D.T.Tasks ? D.T.Tasks.rows : []).find(x => x.closed_interaction_id === r.interaction_id); return [t ? rowTitle(t) : noIds(r.summary), `${r.event === "task_done" ? "Done" : "Cancelled"} by ${by} · ${when}`]; }
+  if (r.event === "task_reassigned") { const m = /moved (.*?)(?: by [^.]*)?\.?$/i.exec(r.summary || ""); return [r.next_step ? cap(stripOwner(noIds(r.next_step), [])) : (M.people[r.person_id] || {}).name || "A task", `${m ? "Moved " + m[1] : "Moved"} by ${by} · ${when}`]; }
+  if (r.event === "owner_set") { const m = /to ([^.]*?) by/i.exec(r.summary || ""); return [(M.people[r.person_id] || {}).name || noIds(r.summary), `${m ? "Owner set to " + m[1] : "Owner changed"} by ${by} · ${when}`]; }
+  return [noIds(r.summary), `${by} · ${when}`];
+}
+function changeLines(r,M,tasksBy){return rawChangeLines(r,M,tasksBy).map(displayText);}
+const activityDisclosure=new Map();
+const activityKind=r=>r.event?.startsWith('task_')?'Task':r.event?.startsWith('tour_')?'Tour':r.event==='owner_set'?'Owner':({hold_accepted:'Hold',hold_released:'Hold',deposit_paid:'Deposit',promesa_signed:'Contract',closed:'Closing'}[r.event]||{touch:'Conversation',decision:'Update',note:'Note'}[r.record_type]||'Update');
+const activityPerson=r=>r.person_id?'buyer:'+r.person_id:r.partner_id?'partner:'+r.partner_id:r.logged_by?'team:'+r.logged_by:'other';
+function activityName(r) {return displayText(r.person_id?model().people[r.person_id]?.name||'Name missing':r.partner_id?records('Partners').find(p=>p.partner_id===r.partner_id)?.name||'Name missing':r.logged_by||'Other');}
+function activityRows() {
+ return DeskRules.effective(records('Interactions')).filter(r=>r.summary).slice().sort((a,b)=>(Date.parse(b.timestamp||b.logged_at)||0)-(Date.parse(a.timestamp||a.logged_at)||0));
+}
+function activityMatch(r,skip='') {
+ const v=tabViews.changes,partner=records('Partners').find(p=>p.partner_id===r.partner_id);
+ return searchMatches(v.search,activityName(r),partner?.name,r.summary,r.logged_by,r.unit_id,activityKind(r))&&
+ (skip==='buyer'||v.buyer==='all'||activityPerson(r)===v.buyer)&&(skip==='team'||v.team==='all'||r.logged_by===v.team)&&(skip==='kind'||v.kind==='all'||activityKind(r)===v.kind);
+}
+function renderChanges() {
+ const M=model(),all=activityRows(),v=tabViews.changes,list=all.filter(r=>activityMatch(r)),tasksBy=Object.fromEntries(records('Tasks').map(t=>[t.task_id,t]));
+ const buyerRows=all.filter(r=>activityMatch(r,'buyer')),buyerKeys=[...new Set(all.filter(r=>r.person_id||r.partner_id).map(activityPerson))];
+ const buyerOptions=buyerKeys.map(key=>[key,activityName(all.find(r=>activityPerson(r)===key)),buyerRows.filter(r=>activityPerson(r)===key).length]).sort((a,b)=>a[1].localeCompare(b[1]));
+ $('c-buyer').innerHTML=`<label class="field">Buyer<select class="input" data-tab-filter="c-buyer">${options([['all',`All (${buyerRows.length})`],...buyerOptions.map(([key,name,count])=>[key,`${name} (${count})`])],v.buyer)}</select></label>`;
+ const teamRows=all.filter(r=>activityMatch(r,'team')),teamNames=[...new Set(all.map(r=>r.logged_by).filter(Boolean))].sort();
+ $('c-team').innerHTML=`<label class="field">Team<select class="input" data-tab-filter="c-team">${options([['all',`All (${teamRows.length})`],...teamNames.filter(name=>name===v.team||teamRows.some(r=>r.logged_by===name)).map(name=>[name,`${displayText(name)} (${teamRows.filter(r=>r.logged_by===name).length})`])],v.team)}</select></label>`;
+ tabFilter('c-kind','Activity',all.filter(r=>activityMatch(r,'kind')),activityKind,v.kind,x=>x);
+ const groups=new Map();for(const r of list){const key=activityPerson(r);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);}
+ const statuses=new Map([...new Set(list.map(r=>r.person_id).filter(Boolean))].map(id=>[id,activityStatuses(id)]));
+ const entry=r=>{const [original,by]=changeLines(r,M,tasksBy),status=statuses.get(r.person_id)?.get(r.interaction_id)?.text;return `<li><p>${esc(status||original)}</p><time>${esc(by)}</time>${status?`<details><summary>Note</summary><p>${esc(original)}</p></details>`:''}</li>`;};
+ patchList($('c-list'),groups.size?[...groups].map(([key,rows],index)=>({key:'c:'+key,lock:false,html:`<details class="profile-section" data-activity-group="${esc(key)}"${(activityDisclosure.get(key)??index<5)?' open':''}><summary>${esc(activityName(rows[0]))} (${rows.length})</summary><ol class="timeline">${rows.slice(0,3).map(entry).join('')}</ol>${rows.length>3?`<details data-activity-group="${esc(key)}:more"${activityDisclosure.get(key+':more')?' open':''}><summary>More (${rows.length-3})</summary><ol class="timeline">${rows.slice(3).map(entry).join('')}</ol></details>`:''}</details>`})):[{key:'c:none',lock:false,html:'<p>No activity.</p>'}]);
+}
+
+// ---------- loading ----------
+function errText(e) {
+  if (!e) return ""; const c = e.code;
+  if (c === "needs_reauth") return `Reconnect ${e.server || "Google"} in Settings.`;
+  if (c === "server_not_connected") return `Connect ${e.server || "Google"}.`;
+  if (c === "selection_required") return `Choose ${e.server || "Google"} connection.`;
+  if (c === "not_in_manifest" || c === "not_granted") return `Allow ${e.server || "this connection"} in Permissions.`;
+  if (c === "blocked_by_policy" || c === "approval_required") return "Access blocked.";
+  if (c === "server_unavailable") return `${e.server || "Google"} unavailable.`;
+  return e.message || "Could not finish.";
+}
+
+function markFresh(target = view) { const at = new Date(); viewTimes[target] = at; S.fresh = { state: "ok", at, err: null }; saveCache(); }
+function switchView(v) {
+  S.scroll[view] = window.scrollY; view = v; S.open = null;
+  if (!previewMode) S.fresh = {state: 'loading', at: viewTimes[v] || (S.fresh.state === 'cached' ? S.fresh.at : null), err: null};
+  renderAll();
+  start(true);
+  const nb = document.querySelector(`#nav [data-view="${v}"]`); if (nb && nb.scrollIntoView) nb.scrollIntoView({ block: "nearest", inline: "nearest" });
+  window.scrollTo(0, S.scroll[v] || 0);
+  try { history.replaceState(null, "", v === "today" ? location.pathname + location.search : "#" + v); } catch (e) {}
+}
+$("nav").addEventListener("scroll", navEdge, { passive: true }); window.addEventListener("resize", navEdge);
+$("who").addEventListener("change", e => { who = e.target.value; store.set("desk-dash-view", who); S.open = null; renderAll(); });
+document.addEventListener("visibilitychange", () => {
+  if (!previewMode && document.visibilityState === "visible" && mcp && D && S.fresh.at && Date.now() - (+S.fresh.at) > 120000) start(true);
+});
+
+// Who is viewing: preselect "You are" from the viewer's claude.ai name when it matches exactly one person on the desk.
+function resolveGuess() {
+  if (previewMode) return;
+  const hits = D && authenticatedEmail ? D.owners.filter(o => o.email && o.email.toLowerCase() === authenticatedEmail) : [];
+  me = hits.length === 1 ? hits[0].name : "";
+}
+
+function renderFailure(e) {
+  $("t-lede").textContent = "";
+  $("t-list").innerHTML = "";
+  $("t-notes").dataset.sig = "";
+  $("t-notes").innerHTML = `<div class="callout bad"><span><b>Could not load.</b> ${esc(errText(e))}${e && (e.code === "tool_error" || e.code === "upstream_error") ? " Check access." : ""}</span><div class="btns"><button type="button" class="btn" data-act="refresh">Retry</button></div></div>`;
+}
+function renderStop(title, text) {
+  $("fresh").textContent = "";
+  $("t-lede").textContent = "";
+  $("t-list").innerHTML = "";
+  $("t-notes").innerHTML = `<div class="callout"><span><b>${esc(title)}</b> ${esc(text)}</span></div>`;
+}
+async function start(fresh) {
+  if (previewMode) { renderAll(); return; }
+  if (!mcp) return;
+  if (refreshRun) { refreshQueued = true; return refreshRun; }
+  refreshRun = (async () => {
+    S.loading = true;
+    const activeExtra=new Set();
+    try {
+      do {
+        refreshQueued = false;
+        for(const tab of requestedTabs)activeExtra.add(tab);
+        const target = view, began = timingNow(), extra = [...activeExtra];
+        requestedTabs.clear();
+        S.fresh = {...S.fresh, state: 'loading'};
+        renderHeader();
+        try {
+          const next = await load(fresh, target, extra);
+          D = next;
+          if (target === view) { markFresh(target); renderAll(); reportTiming('fresh-view', began, target); }
+          else { viewTimes[target] = new Date(); refreshQueued = true; }
+        } catch (e) {
+          if (target !== view) refreshQueued = true;
+          else {
+            S.fresh = {...S.fresh, state: 'error', err: e};
+            if (D) { renderAll(); toast(errText(e)); }
+            else { renderHeader(); renderFailure(e); }
+          }
+        }
+        fresh = true;
+      } while (refreshQueued);
+    } finally { S.loading = false; }
+  })();
+  try { await refreshRun; } finally { refreshRun = null; }
+}
+
+async function ensureTabs(tabs) {
+  if (previewMode) return tabs.every(t => !!D?.T[t]);
+  for (const tab of tabs) if (TABS.includes(tab)) requestedTabs.add(tab);
+  await start(true);
+  return S.fresh.state === 'ok' && tabs.every(t => !!D?.T[t] && !!freshRaw[t]);
+}
+
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.view){if(D)switchView(b.dataset.view);return;}
+ if(b.id==='t-coming'){S.coming=!S.coming;store.set('desk-dash-coming',S.coming?'1':'0');renderAll();return;}
+ if(b.id==='toast-close'){$('toast').hidden=true;return;}
+ if(b.dataset.act==='refresh'){start(true);return;}
+ if(D&&b.dataset.act)handleWorkflowClick(b.dataset.act,b);
+});
+// BEGIN WORKFLOW RULES
+/* Shared deterministic rules. No network, credentials or implicit authorization. */
+const DeskRules = (() => {
+  const stages = ['lead','contact and discovery','presentation','tour','unit selection','reservation','under contract','closed','on hold','long-term nurture','lost'];
+  const tracks = ['unbooked','booked','second-home','investment','long-term','agent-network','general'];
+  const transactionStages = ['reservation','under contract','closed'];
+  const date = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x) && !Number.isNaN(Date.parse(x)) && new Date(x+'T12:00:00Z').toISOString().slice(0,10) === x;
+  const requireValue = (ok, message) => { if (!ok) throw new Error(message); };
+  function businessDate(d, n=2) {
+    requireValue(date(d), 'A valid due date is required.');
+    let t = new Date(d+'T12:00:00Z');
+    while (n>0) { t.setUTCDate(t.getUTCDate()+1); if (![0,6].includes(t.getUTCDay())) n--; }
+    return t.toISOString().slice(0,10);
+  }
+  function buyer(v, {owners=[], today, previousStage='', transactionVerified=false, confirmedDueDate=''}={}) {
+    requireValue(stages.includes(v.stage), 'Choose a current stage.');
+    requireValue(owners.includes(v.owner), 'Confirm the buyer owner.');
+    requireValue(date(v.effective_date) && (!today || v.effective_date <= today), 'Choose an outcome or start date no later than today.');
+    requireValue(!transactionStages.includes(v.stage) || v.stage === previousStage || transactionVerified, 'This stage needs a verified transaction from the unit status reporter. Use the desk chat to confirm its evidence.');
+    if (['on hold','long-term nurture','lost'].includes(v.stage)) requireValue(v.reason?.trim(), 'Add a reason, or explicitly say Reason not provided for a lost buyer.');
+    if (['on hold','long-term nurture'].includes(v.stage)) {
+      requireValue(date(v.review_date) && v.review_date >= v.effective_date && (!today || v.review_date >= today), 'Choose a review date on or after the start date and today.');
+      requireValue(v.resume_condition?.trim(), 'Say what would move this buyer forward.');
+    }
+    requireValue(v.no_next_action==null || typeof v.no_next_action==='boolean', 'Confirm whether there is no next action.');
+    if (v.no_next_action===true) requireValue(v.reason?.trim() && !v.next_step && !v.task_owner && !v.due_date, 'Record why no next action is needed, or supply an owned next step instead.');
+    if (v.no_next_action!==true && (!['lost','closed'].includes(v.stage) || v.next_step || v.task_owner || v.due_date)) {
+      requireValue(v.next_step?.trim() && owners.includes(v.task_owner), 'Confirm a next step and its owner.');
+      requireValue(date(v.due_date), 'Choose a valid next-step date.');
+      requireValue(!today || v.due_date >= today || (date(confirmedDueDate) && v.due_date===confirmedDueDate), 'Choose today or a later next-step date.');
+      if (['on hold','long-term nurture'].includes(v.stage)) requireValue(v.due_date <= v.review_date, 'The next step must be due by the review date.');
+    }
+    return {...v};
+  }
+  // Pure chat helpers. The caller authenticates the operator, confirms Save and
+  // persists/read-backs the returned row. Overrides never establish unit facts.
+  // Pass the verified Settings.operators roster explicitly for each desk.
+  // Omitted options retain the OCN compatibility default.
+  const operatorNames = (operators=['Freddie','Alix']) => (Array.isArray(operators)?operators:typeof operators==='string'?operators.split(';'):[]).filter(v=>typeof v==='string').map(v=>v.trim()).filter(Boolean);
+  function overrideAttribution(reason, {operators}={}) {
+    if (typeof reason !== 'string') return null;
+    const match=reason.match(/^Set by ([^:\n]+): (\S[\s\S]*)$/);
+    if (!match || !operatorNames(operators).includes(match[1]) || !/[\p{L}\p{N}]/u.test(match[2])) return null;
+    return {operator:match[1],reason:match[2].trim()};
+  }
+  function likelihoodOverride(record={}, {operators}={}) {
+    const value=record.likelihood_override;
+    if (value==null || typeof value==='string' && !value.trim()) return null;
+    if (!['number','string'].includes(typeof value) || typeof value==='string' && !/^\d+(?:\.\d+)?$/.test(value.trim())) return null;
+    const percent=Number(value),attribution=overrideAttribution(record.override_reason,{operators});
+    return Number.isFinite(percent) && percent>=0 && percent<=100 && attribution ? {percent,...attribution} : null;
+  }
+  function setOverride(record={}, {metric,value,operator,reason,operators}={}) {
+    requireValue(['stage','likelihood'].includes(metric), 'Choose stage or likelihood.');
+    const name=typeof operator==='string'?operator.trim().toLowerCase():'';
+    const canonical=operatorNames(operators).find(value=>value.toLowerCase()===name);
+    requireValue(canonical, 'Only a confirmed desk operator can set an override.');
+    const field=metric+'_override',reasonField=metric==='stage'?'stage_override_reason':'override_reason',next={...record};
+    if (value==null || typeof value==='string' && !value.trim()) {
+      next[field]='';
+      next[reasonField]='';
+      return next;
+    }
+    requireValue(typeof reason==='string' && /[\p{L}\p{N}]/u.test(reason.trim()), 'Give a reason for the override.');
+    next[reasonField]='Set by '+canonical+': '+reason.trim();
+    if (metric==='stage') {
+      requireValue(stages.includes(value), 'Choose a current stage.');
+      next[field]=value;
+    } else {
+      next[field]=value;
+      requireValue(likelihoodOverride(next,{operators}), 'Choose a likelihood from 0 to 100.');
+      next[field]=Number(value);
+    }
+    return next;
+  }
+  function advanceOverrides(record={}, {loggedEvent=false,event,before={},after={}}={}) {
+    const next={...record};
+    // before/after must come from confirmed facts without the override. A late
+    // event or ordinary note that leaves that computed metric unchanged keeps it.
+    if (!loggedEvent || !event?.interaction_id || !record.person_id || event.person_id!==record.person_id) return next;
+    if (stages.includes(before.stage) && stages.includes(after.stage) && before.stage!==after.stage) {next.stage_override='';next.stage_override_reason='';}
+    if ([before.likelihood,after.likelihood].every(v=>typeof v==='number' && Number.isFinite(v) && v>=0 && v<=100) && before.likelihood!==after.likelihood) {next.likelihood_override='';next.override_reason='';}
+    return next;
+  }
+  function interactionColumnIssues(row={}, {operators=[]}={}) {
+    const issues=[],text=value=>typeof value==='string'?value.trim():'';
+    if (text(row.source_link) && !(row.record_type==='correction' && text(row.source_link)==='clear')) {
+      try { const url=new URL(row.source_link); if (!['http:','https:'].includes(url.protocol) || !url.hostname) issues.push('source_link'); }
+      catch { issues.push('source_link'); }
+    }
+    if (operators.length && text(row.logged_by) && !operators.includes(text(row.logged_by))) issues.push('logged_by');
+    const readableStages=[...stages,'inquiry','qualified','reservation deposit','promesa signed'];
+    if (text(row.stage) && !(row.record_type==='correction' && text(row.stage)==='clear') && !readableStages.includes(text(row.stage).toLowerCase())) issues.push('stage');
+    // Unknown source keys/events are permitted. An exact stage name here is a
+    // clear column-placement error, not a reason to guess its intended field.
+    for (const key of ['source_key','event']) {
+      const value=text(row[key]).toLowerCase();
+      if (stages.includes(value) && !(key==='event' && ['closed','lost'].includes(value))) issues.push(key);
+    }
+    return issues;
+  }
+  const unitStatus = unit => String(unit?.status||'').trim().toLowerCase();
+  const unitSoldToBuyer = unit => unitStatus(unit)==='sold' && typeof unit.holder_person_id==='string' && !!unit.holder_person_id.trim();
+  function unitAreas(unit={}) {
+    const positive=value=>{const n=typeof value==='number'?value:typeof value==='string'&&/^\d+(?:\.\d+)?$/.test(value.trim().replace(/,/g,''))?Number(value.trim().replace(/,/g,'')):NaN;return Number.isFinite(n)&&n>0?n:null;};
+    let m2=positive(unit.size_m2),ft2=positive(unit.size_ft2??unit.square_footage);
+    const legacy=positive(unit.size??unit.Size),label=String(unit.size_unit??unit['Size unit']??'').trim().toLowerCase();
+    if(m2==null&&ft2==null&&legacy!=null){
+      if(['m2','m²','sqm','sq m','square meters','square metres'].includes(label))m2=legacy;
+      if(['ft2','ft²','sqft','sq ft','square feet'].includes(label))ft2=legacy;
+    }
+    // Preserve supplied measurements and derive only a missing counterpart.
+    if(m2!=null&&ft2==null)ft2=Math.round(m2*10.7639);
+    else if(m2==null&&ft2!=null){m2=Math.round(ft2/10.7639);}
+    return {size_m2:m2,size_ft2:ft2};
+  }
+  function inventoryReviewProposals(units=[],reviews=[],{reporter='Jorge'}={}) {
+    const seen=new Set(),out=[];
+    for(const unit of units){
+      const id=String(unit.unit_id||'').trim(),question=`Was ${id} sold to a buyer or held by an investor?`;
+      if(!id||seen.has(id)||unitStatus(unit)!=='sold'||unitSoldToBuyer(unit))continue;
+      seen.add(id);
+      if(reviews.some(r=>String(r.status||'').trim().toLowerCase()==='open' && (r.reason==='status confirmation' && (r.unit_id===id || String(r.candidate_ids||'').split(/[;,]/).map(v=>v.trim()).includes(id)))))continue;
+      out.push({unit_id:id,reason:'status confirmation',question,owner:reporter,status:'open'});
+    }
+    return out;
+  }
+  function dashboardLink(settings={},person='') {
+    const normalized=value=>String(value||'').normalize('NFC').trim().toLowerCase();
+    const name=typeof person==='string'?normalized(person):'';
+    if(!name)return '';
+    const safe=value=>{if(typeof value!=='string'||/[;|]/.test(value))return '';try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&u.hostname?value:'';}catch{return '';}};
+    const parts=String(settings.dashboard_links||'').split(';').map(entry=>entry.split('|').map(v=>v.trim()));
+    const own=parts.map((entry,index)=>({entry,index})).filter(({entry})=>normalized(entry[0])===name);
+    const entries=own.map(({entry,index})=>parts[index+1]?.length===1&&parts[index+1][0]?[]:entry);
+    // Conflicting duplicate mappings require correction, never a guessed link.
+    if(entries.length)return entries.length===1&&entries[0].length===2?safe(entries[0][1]):'';
+    return name===normalized(settings.desk_owner)?safe(String(settings.dashboard_link||'').trim()):'';
+  }
+  function villa(v, {unit, reporter, owners=[], now}={}) {
+    requireValue(['requested','accepted','release'].includes(v.status), 'Choose request, acceptance or release.');
+    requireValue(v.person_id && v.unit_id && v.reason?.trim(), 'Name the buyer, villa and reason.');
+    if (v.status === 'requested') return {...v};
+    requireValue(reporter && v.accepted_by === reporter && v.evidence?.trim(), 'The unit status reporter must confirm the evidence.');
+    requireValue(unit && unit.unit_id === v.unit_id, 'Read the current villa before changing it.');
+    if (v.status === 'release') {
+      requireValue(unit.status === 'held' && unit.holder_person_id === v.person_id, 'Only this buyer’s accepted hold can be released.');
+      return {...v};
+    }
+    requireValue(unit.status === 'available' || (unit.status === 'held' && unit.holder_person_id === v.person_id), 'This villa is already committed. Resolve availability first.');
+    const instant = x => typeof x === 'string' && /T\d\d:\d\d.*(?:Z|[+-]\d\d:\d\d)$/.test(x) && Number.isFinite(Date.parse(x));
+    requireValue(instant(v.starts_at) && instant(v.expires_at) && Date.parse(v.expires_at)>Date.parse(v.starts_at), 'Supply a start and later expiry, both with a time-zone offset.');
+    requireValue(!now || Date.parse(v.expires_at)>Date.parse(now), 'The hold expiry must still be in the future.');
+    requireValue(v.terms?.trim() && v.next_step?.trim() && owners.includes(v.task_owner) && date(v.due_date) && v.due_date <= v.expires_at.slice(0,10), 'Add terms and a confirmed next step due by expiry.');
+    return {...v};
+  }
+  function effective(rows) {
+    const order=(a,b)=>(a.timestamp||'').localeCompare(b.timestamp||'') || (a.logged_at||'').localeCompare(b.logged_at||'') || (a._row||0)-(b._row||0);
+    const originals=rows.filter(r=>r.record_type!=='correction');
+    const aliases=new Map(originals.map(r=>[r.interaction_id,{...r}]));
+    for(const c of rows.filter(r=>r.record_type==='correction').sort((a,b)=>(a.logged_at||a.timestamp||'').localeCompare(b.logged_at||b.timestamp||'') || (a._row||0)-(b._row||0))) {
+      const prior=aliases.get(c.corrects_interaction_id); if(!prior) continue;
+      const merged={...prior,interaction_id:c.interaction_id};
+      // Logging a correction does not change when the original fact occurred.
+      // Its own logged_at and row stay on the raw audit row; preserve original
+      // tie ordering when dashboard outcomes share a date-only timestamp.
+      for(const [key,value] of Object.entries(c)) if(!['record_type','corrects_interaction_id','interaction_id','logged_at','_row'].includes(key) && value!=='' && value!=null) merged[key]=value==='clear'?'':value;
+      for(const [key,value] of aliases) if(value===prior) aliases.set(key,merged);
+      aliases.set(c.interaction_id,merged);
+    }
+    return [...new Set(originals.map(r=>aliases.get(r.interaction_id)))].sort(order);
+  }
+
+  function workflows(rows, kind, person) {
+    return effective(rows).filter(r=>!person || r.person_id===person).flatMap(r=> {
+      try { const v=JSON.parse(r.workflow_json||'null'); return v?.version===1 && v.kind===kind ? [{...v, interaction_id:r.interaction_id, person_id:r.person_id, at:r.timestamp, source_key:r.source_key}] : []; } catch { return []; }
+    });
+  }
+  function booked(rows, person, {today}={}) {
+    const bookings=new Map(), events=new Set(), sources=new Set();
+    const text=x=>typeof x==='string' && !!x.trim();
+    for(const r of effective(rows).filter(r=>r.person_id===person)) {
+      if(today && r.timestamp?.slice(0,10)>today) continue;
+      let v=null;
+      try { v=JSON.parse(r.workflow_json||'null'); } catch { continue; }
+      let key,status,eventId,at;
+      if(v?.version===1 && v.kind==='journey') {
+        if(!text(v.event_id) || !text(v.tour_id) || !text(v.confirmed_by) || !date(v.effective_date) || (today && v.effective_date>today)) continue;
+        const allowed=['version','kind','type','event_id','effective_date','confirmed_by','tour_id',...(['tour_booked','tour_rescheduled'].includes(v.type)?['owner','starts_at','preparation']:['tour_cancelled','tour_no_show'].includes(v.type)?['reason']:[]),...(['tour_completed','tour_no_show'].includes(v.type)?['occurred_at']:[])];
+        if(Object.keys(v).some(k=>!allowed.includes(k))) continue;
+        if(['preparation','reason'].some(k=>typeof v[k]==='string' && /[\w.+-]+@[\w.-]+\.[a-z]{2,}\b|\bhttps?:\/\/|\bwww\.|\+\d[\d\s().-]{6,}\d|(?:^|[^\d])(?:\(\d{3}\)\s*|\d{3}[-. ])\d{3}[-. ]\d{4}(?!\d)/i.test(v[k]))) continue;
+        if(['tour_booked','tour_rescheduled'].includes(v.type)) {
+          if(!text(v.owner) || (v.preparation!=null && typeof v.preparation!=='string') || typeof v.starts_at!=='string' || !date(v.starts_at.slice(0,10)) || !/^\d{4}-\d{2}-\d{2}T\d\d:\d\d(?::\d\d(?:\.\d+)?)?(?:Z|[+-]\d\d:\d\d)$/.test(v.starts_at) || !Number.isFinite(Date.parse(v.starts_at)) || +v.starts_at.slice(11,13)>23 || +v.starts_at.slice(14,16)>59 || (v.starts_at.slice(16).startsWith(':') && +v.starts_at.slice(17,19)>59)) continue;
+          status='booked';
+        } else if(['tour_cancelled','tour_completed','tour_no_show'].includes(v.type)) {
+          if(v.type!=='tour_completed' && !text(v.reason)) continue;
+          if(v.occurred_at!=null && (typeof v.occurred_at!=='string' || !date(v.occurred_at.slice(0,10)) || !/^\d{4}-\d{2}-\d{2}T\d\d:\d\d(?::\d\d(?:\.\d+)?)?(?:Z|[+-]\d\d:\d\d)$/.test(v.occurred_at) || !Number.isFinite(Date.parse(v.occurred_at)) || +v.occurred_at.slice(11,13)>23 || +v.occurred_at.slice(14,16)>59 || (v.occurred_at.slice(16).startsWith(':') && +v.occurred_at.slice(17,19)>59))) continue;
+          status='ended';
+        } else continue;
+        key=`journey:${v.tour_id}`; eventId=v.event_id; at=v.effective_date;
+        if(v.type==='tour_rescheduled' && bookings.get(key)?.status!=='booked') continue;
+        if(status==='ended' && bookings.get(key)?.status!=='booked') continue;
+        // A terminal visit cannot be reopened by an old booking or reschedule.
+        if(bookings.get(key)?.status==='ended') continue;
+      } else if(v?.version===1 && v.kind==='booking') {
+        if(!['booked','cancelled','completed'].includes(v.status)) continue;
+        key=`booking:${v.booking_id || v.provider_event_id || 'legacy'}`;
+        status=v.status==='booked'?'booked':'ended';
+      } else if(!v && ['tour_booked','tour_cancelled','tour_completed'].includes(r.event)) {
+        key=`tour:${r.tour_id || r.booking_id || 'legacy'}`;
+        status=r.event==='tour_booked'?'booked':'ended';
+      } else continue;
+      if((eventId && events.has(eventId)) || (r.source_key && sources.has(r.source_key))) continue;
+      if(at && bookings.get(key)?.at>at) continue;
+      if(eventId) events.add(eventId); if(r.source_key) sources.add(r.source_key);
+      bookings.set(key,{status,at});
+    }
+    return [...bookings.values()].some(b=>b.status==='booked');
+  }
+  function alert(task, day, events=[]) {
+    if (!date(day) || !task || task.status!=='open' || !date(task.due_date) || day<businessDate(task.due_date)) return null;
+    if ([0,6].includes(new Date(day+'T12:00:00Z').getUTCDay())) return null;
+    const key = `followup:${task.task_id}:${task.due_date}`;
+    const attempts = events.filter(e=>e.key===key);
+    // A prepared/uncertain attempt is reconciled against the sender, never blindly retried.
+    if (attempts.some(e=>e.status==='sent') || ['prepared','unknown','suppressed'].includes(attempts.at(-1)?.status)) return null;
+    return {key, eligible_on:businessDate(task.due_date), task_id:task.task_id, due_date:task.due_date, owner:task.owner};
+  }
+  function enrollment(v, {permission, booked, approved, owner, optedOut=false, targetType='buyer'}={}) {
+    requireValue(permission==='yes' && !optedOut, 'Marketing permission is required; an opt-out blocks enrollment.');
+    requireValue(owner, 'Confirm the buyer owner first.');
+    requireValue(tracks.includes(v.track), 'Choose an approved track.');
+    requireValue(v.track!=='agent-network' || targetType==='partner', 'Agent campaigns need a confirmed partner and partner marketing permission.');
+    requireValue(approved?.status==='approved' && approved.track===v.track && approved.version===v.content_version && approved.provider_sequence && approved.approved_by && approved.approved_at, 'This content version and cadence need approval and a connected provider sequence.');
+    requireValue(!(booked && v.track==='unbooked') && (booked || v.track!=='booked'), 'Use the booked preparation path only after a confirmed booking; do not send another invitation.');
+    requireValue(v.confirmed_by, 'An operator must confirm enrollment.');
+    return {...v, status:'pending', provider_sequence:approved.provider_sequence};
+  }
+  function nurture(state={}, event) {
+    requireValue(event?.id && event.type, 'Provider events need a stable event ID and type.');
+    if ((state.processed||[]).includes(event.id)) return state;
+    const s={...state, processed:[...(state.processed||[]), event.id]};
+    const stop = ['reply','booking','takeover','opt_out','stage_change','bounce'].includes(event.type);
+    if (stop) {
+      s.status=event.type==='opt_out' ? 'opted out' : event.type==='bounce' ? 'needs attention' : 'paused';
+      s.reason=event.type; s.cancel_required=true;
+      if (event.type==='opt_out') s.opted_out=true;
+      if (['reply','booking','takeover'].includes(event.type) && !s.handoff_key) s.handoff_key=`handoff:${s.enrollment_id}`;
+    } else if (event.type==='cancel_confirmed') { s.cancel_required=false; }
+    else if (event.type==='enrolled' && !s.cancel_required && !s.opted_out && (!s.status || s.status==='pending')) s.status='active';
+    else if (event.type==='delivery_failed' && !s.opted_out) {s.status='needs attention';s.reason='delivery_failed';}
+    else if (event.type==='delivered') s.last_delivery=event.at;
+    if (s.opted_out) s.status='opted out';
+    return s;
+  }
+  return {stages, tracks, date, businessDate, buyer, overrideAttribution, likelihoodOverride, setOverride, advanceOverrides, interactionColumnIssues, unitStatus, unitSoldToBuyer, unitAreas, inventoryReviewProposals, dashboardLink, villa, effective, workflows, booked, alert, enrollment, nurture};
+})();
+
+// END WORKFLOW RULES
+// BEGIN WORKFLOW JOURNEY
+/* Confirmed journey facts and proposed actions. No writes or implicit authorization. */
+const DeskJourney = (() => {
+  const rules = typeof module !== 'undefined' && module.exports ? require('./rules.cjs') : DeskRules;
+  const fields = {
+    qualification:['outcome','reason','conversation'],
+    handoff_offered:['handoff_id','from_owner','to_owner','context'],
+    handoff_accepted:['handoff_id','accepted_by'],
+    tour_requested:['tour_id','owner','next_step','task_owner','due_date'],
+    tour_booked:['tour_id','owner','starts_at','preparation'],
+    tour_rescheduled:['tour_id','owner','starts_at','preparation'],
+    tour_preparation:['tour_id','preparation'],
+    tour_cancelled:['tour_id','reason'],
+    tour_no_show:['tour_id','reason','occurred_at'],
+    tour_completed:['tour_id','occurred_at'],
+    tour_recap:['tour_id','recap','next_step','task_owner','due_date','no_next_action','reason']
+  };
+  const common = ['version','kind','type','event_id','effective_date','confirmed_by'];
+  const text = x => typeof x === 'string' && !!x.trim();
+  const requireValue = (ok,message) => { if (!ok) throw Error(message); };
+  const terminal = s => ['cancelled','no_show','completed'].includes(s);
+  const instant = x => typeof x === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(x) && rules.date(x.slice(0,10)) && Number.isFinite(Date.parse(x)) && +x.slice(11,13)<24 && +x.slice(14,16)<60 && (!x.slice(16).startsWith(':') || +x.slice(17,19)<60);
+
+  function localDate(value,timeZone) {
+    requireValue(instant(value), 'Supply an actual time with an explicit time-zone offset.');
+    requireValue(text(timeZone), 'Confirm the appointment or reporting time zone before recording this outcome.');
+    let parts;
+    try { parts=new Intl.DateTimeFormat('en-US',{timeZone,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value)); }
+    catch { throw Error('Confirm a valid appointment or reporting time zone before recording this outcome.'); }
+    const part=type=>parts.find(p=>p.type===type).value;
+    return `${part('year')}-${part('month')}-${part('day')}`;
+  }
+
+  function outcomeTiming(v,tour,{now,timeZone,today}={}) {
+    requireValue(instant(now), 'Confirm the actual or practice clock time before recording this visit outcome.');
+    const currentDay=localDate(now,timeZone), startDay=localDate(tour.starts_at,timeZone);
+    requireValue(!today || today===currentDay, 'The reporting date and clock disagree. Refresh the clock and confirmed time zone.');
+    requireValue(v.effective_date<=currentDay, 'Choose an outcome date no later than today in the confirmed time zone.');
+    requireValue(Date.parse(tour.starts_at)<=Date.parse(now), 'This visit has not started. Confirm an earlier appointment correction first, or record the outcome after the visit.');
+    if(v.occurred_at) {
+      requireValue(instant(v.occurred_at), 'Add visit outcome time with a time-zone offset.');
+      requireValue(localDate(v.occurred_at,timeZone)===v.effective_date, 'The outcome date and actual time must agree in the confirmed time zone.');
+      requireValue(Date.parse(v.occurred_at)<=Date.parse(now), 'The actual outcome time cannot be in the future.');
+      requireValue(Date.parse(v.occurred_at)>=Date.parse(tour.starts_at), 'Outcome is before booking. Check the earlier appointment in chat.');
+    } else {
+      requireValue(v.effective_date>=startDay, 'Outcome is before booking. Check the earlier appointment in chat.');
+      requireValue(v.effective_date>startDay, 'For an outcome on the appointment day, confirm the actual outcome time with its time-zone offset.');
+    }
+  }
+
+  function normalize(value, {history=false}={}) {
+    requireValue(value && typeof value==='object' && !Array.isArray(value), 'Supply a journey event.');
+    requireValue(value.version===1 && value.kind==='journey' && Object.hasOwn(fields,value.type), 'Choose a supported journey event.');
+    const allowed = [...common,...fields[value.type]];
+    requireValue(Object.keys(value).every(k=>allowed.includes(k)), 'Keep this journey event to its confirmed fields; save buyer owner or stage changes separately.');
+    const v=Object.fromEntries(Object.entries(value).map(([k,x])=>[k,typeof x==='string'?x.trim():x]));
+    requireValue(text(v.event_id) && rules.date(v.effective_date) && text(v.confirmed_by), 'Supply a stable event reference, valid outcome date and confirmed operator.');
+    for(const key of ['recap','reason','context','preparation','next_step']) if(typeof v[key]==='string') requireValue(!(/[\w.+-]+@[\w.-]+\.[a-z]{2,}\b|\bhttps?:\/\/|\bwww\.|\+\d[\d\s().-]{6,}\d|(?:^|[^\d])(?:\(\d{3}\)\s*|\d{3}[-. ])\d{3}[-. ]\d{4}(?!\d)/i.test(v[key])), 'Keep contact details in the buyer record or source; summarize feedback without addresses, links or phone numbers.');
+    if (v.type.startsWith('handoff_')) requireValue(text(v.handoff_id), 'Supply the confirmed handoff reference.');
+    if (v.type.startsWith('tour_')) requireValue(text(v.tour_id), 'Supply the confirmed visit reference.');
+    switch(v.type) {
+      case 'qualification':
+        requireValue(['ready','needs information','not ready','not a fit'].includes(v.outcome) && text(v.reason), 'Choose a readiness outcome and record its reason.');
+        requireValue(v.conversation==null || typeof v.conversation==='boolean', 'Confirm whether an actual buyer conversation happened.');
+        v.conversation=v.conversation===true;
+        break;
+      case 'handoff_offered': requireValue(text(v.from_owner) && text(v.to_owner) && v.from_owner!==v.to_owner && text(v.context), 'Confirm the sender, a different recipient and handoff context.'); break;
+      case 'handoff_accepted': requireValue(text(v.accepted_by), 'Confirm who accepted the handoff.'); break;
+      case 'tour_requested': requireValue(text(v.owner) && text(v.next_step) && text(v.task_owner) && rules.date(v.due_date), 'Confirm the visit owner and a next step with its owner and date.'); break;
+      case 'tour_booked': case 'tour_rescheduled': requireValue(text(v.owner) && instant(v.starts_at), 'Confirm the visit owner and booking time with an explicit time-zone offset.'); requireValue(v.preparation==null || typeof v.preparation==='string', 'Record preparation as confirmed checklist text, or leave it blank.'); v.preparation=v.preparation||''; break;
+      case 'tour_cancelled': case 'tour_no_show': requireValue(text(v.reason), 'Record the cancellation or no-show reason.'); break;
+      case 'tour_preparation': requireValue(text(v.preparation), 'Record the confirmed visit checklist or context.'); break;
+      case 'tour_recap':
+        requireValue(text(v.recap), 'Record the supplied visit recap.');
+        requireValue(v.no_next_action==null || typeof v.no_next_action==='boolean', 'Confirm whether there is no next action.');
+        if(v.no_next_action===true) requireValue(text(v.reason) && !v.next_step && !v.task_owner && !v.due_date, 'Record why no next action is needed, or supply an owned next step instead.');
+        else if(!history) requireValue(text(v.next_step) && text(v.task_owner) && rules.date(v.due_date), 'Confirm the next action, its owner and a valid date, or explicitly confirm no next action with a reason.');
+        break;
+    }
+    if(!history && v.occurred_at!=null) requireValue(instant(v.occurred_at), 'Add visit outcome time with a time-zone offset.');
+    return v;
+  }
+
+  function validate(value, {owners=[],today,actor,state:current,now,timeZone}={}) {
+    const v=normalize(value);
+    requireValue(owners.includes(actor) && v.confirmed_by===actor, 'The confirmed operator must match your authenticated roster identity.');
+    requireValue(!today || (rules.date(today) && v.effective_date<=today), 'Choose an outcome date no later than today.');
+    for(const k of ['owner','from_owner','to_owner','accepted_by','task_owner']) if(text(v[k])) requireValue(owners.includes(v[k]), 'Confirm each owner and recipient from the team roster.');
+    const tour=current?.tours?.find(t=>t.tour_id===v.tour_id);
+    if(v.type==='handoff_accepted') {
+      const offer=current?.handoff;
+      requireValue(offer?.status==='offered' && offer.handoff_id===v.handoff_id && offer.to_owner===actor && v.accepted_by===actor && v.effective_date>=offer.effective_date, 'Only the recipient can accept the current matching handoff offer.');
+    }
+    if(v.type==='tour_requested' || v.type==='tour_booked') requireValue(!tour || !terminal(tour.status), 'This visit has ended. Use a new visit reference for another visit.');
+    if(v.type==='tour_requested') requireValue(!tour || tour.status==='requested', 'This visit is already booked. Record a reschedule or cancellation instead.');
+    if(v.type==='tour_rescheduled') requireValue(tour?.status==='booked', 'Confirm an existing open booking before rescheduling it.');
+    if(v.type==='tour_preparation') requireValue(tour?.status==='booked', 'Confirm an existing open booking before updating preparation.');
+    if(['tour_cancelled','tour_no_show','tour_completed'].includes(v.type)) requireValue(tour?.status==='booked', 'Confirm an existing open booking before recording this outcome.');
+    if(['tour_no_show','tour_completed'].includes(v.type)) outcomeTiming(v,tour,{now,timeZone,today});
+    if(v.type==='tour_recap') {
+      requireValue(tour?.status==='completed', 'Confirm completion of this booked visit before recording its recap.');
+      requireValue(!tour.recap, 'This visit already has a recap. Correct its saved interaction instead of adding it again.');
+    }
+    if(tour) requireValue(v.effective_date>=tour.effective_date, 'The visit update cannot precede its latest confirmed outcome.');
+    return v;
+  }
+
+  function state(rows, person_id, {today,now,timeZone,tasks,calendarEnabled=false}={}) {
+    const result={qualification:null,handoff:null,tours:[],booked:false,gaps:[]};
+    if(!text(person_id)) return result;
+    const tours=new Map(), seenEvents=new Set(), seenSources=new Set();
+    const days=new Map();
+    for(const row of rules.effective(rows.map((r,index)=>({...r,_row:r._row??index}))).filter(r=>r.person_id===person_id)) {
+      let v;try { v=normalize(JSON.parse(row.workflow_json||'null'),{history:true}); } catch { continue; }
+      if(!days.has(v.effective_date))days.set(v.effective_date,[]);
+      days.get(v.effective_date).push({row,v});
+    }
+    const ordered=[...days.keys()].sort().flatMap(day=>{
+      // A date-only fact is not midnight. Keep its original logged position,
+      // including through corrections, and order precise facts by actual instant
+      // within their slots. This avoids a non-transitive mixed-precision comparator.
+      const entries=days.get(day).sort((a,b)=>(instant(a.row.logged_at)&&instant(b.row.logged_at)?Date.parse(a.row.logged_at)-Date.parse(b.row.logged_at):0) || a.row._row-b.row._row);
+      const precise=entries.filter(e=>instant(e.row.timestamp)).sort((a,b)=>Date.parse(a.row.timestamp)-Date.parse(b.row.timestamp));
+      let index=0;
+      return entries.map(e=>instant(e.row.timestamp)?precise[index++]:e);
+    });
+    for(const {row,v} of ordered) {
+      if(today && v.effective_date>today) continue;
+      if(seenEvents.has(v.event_id) || (row.source_key && seenSources.has(row.source_key))) continue;
+      seenEvents.add(v.event_id); if(row.source_key) seenSources.add(row.source_key);
+      const t=tours.get(v.tour_id);
+      if(v.type==='qualification') result.qualification={...v};
+      else if(v.type==='handoff_offered') result.handoff={...v,status:'offered'};
+      else if(v.type==='handoff_accepted') {
+        const offer=result.handoff;
+        if(offer?.status==='offered' && offer.handoff_id===v.handoff_id && offer.to_owner===v.accepted_by && v.confirmed_by===v.accepted_by && v.effective_date>=offer.effective_date) result.handoff={...offer,status:'accepted',accepted_by:v.accepted_by,accepted_event_id:v.event_id,accepted_at:v.effective_date,accepted_effective_date:v.effective_date};
+      } else if(v.type.startsWith('tour_')) {
+        if(t && v.effective_date<t.effective_date) continue;
+        if(v.type==='tour_requested') {
+          if(!t || t.status==='requested') tours.set(v.tour_id,{...v,status:'requested',recap:null,next_action:{task:v.next_step,owner:v.task_owner,due_date:v.due_date}});
+        } else if(v.type==='tour_booked' || v.type==='tour_rescheduled') {
+          if((!t || !terminal(t.status)) && (v.type!=='tour_rescheduled' || t?.status==='booked')) tours.set(v.tour_id,{...t,...v,status:'booked',recap:null,next_action:null});
+        } else if(['tour_cancelled','tour_no_show','tour_completed'].includes(v.type)) {
+          if(t?.status==='booked') {
+            const outcome={...t,...v,status:v.type.slice(5),next_action:null};
+            if(['tour_completed','tour_no_show'].includes(v.type)) {
+              // Keep the original recorded outcome visible. Flag unverifiable
+              // timing instead of rewriting historical facts or inventing times.
+              try { outcomeTiming(v,t,{now,timeZone,today}); }
+              catch(error) { outcome.timing_issue=error.message; }
+            }
+            tours.set(v.tour_id,outcome);
+          }
+        } else if(v.type==='tour_preparation' && t?.status==='booked') {
+          tours.set(v.tour_id,{...t,preparation:v.preparation,preparation_event_id:v.event_id});
+        } else if(v.type==='tour_recap' && t?.status==='completed' && !t.recap) {
+          tours.set(v.tour_id,{...t,recap:{...v},next_action:v.no_next_action===true?null:{task:v.next_step,owner:v.task_owner,due_date:v.due_date}});
+        }
+      }
+    }
+    result.tours=[...tours.values()];
+    const legacy=rows.filter(row=>{try{return JSON.parse(row.workflow_json||'null')?.kind!=='journey';}catch{return true;}});
+    result.booked=result.tours.some(t=>t.status==='booked') || rules.booked(legacy,person_id,{today});
+    if(!result.qualification) result.gaps.push({type:'qualification',label:'Readiness missing.',owner:'',key:`journey:qualification:${person_id}`});
+    const offer=result.handoff;
+    if(offer?.status==='offered') result.gaps.push({type:'handoff',label:'Handoff not accepted yet.',owner:offer.from_owner,key:`journey:handoff:${offer.handoff_id}`});
+    for(const t of result.tours) {
+      // Only a fresh Tasks read can establish a missing host. History-only
+      // callers retain their existing result when Tasks have not been supplied.
+      if(t.status==='booked' && Array.isArray(tasks)) {
+        const gap={type:'tour_host',owner:t.owner,tour_id:t.tour_id,key:`journey:host:${t.tour_id}`};
+        try {
+          const host=linkedHostTask(rows,tasks,person_id,t.tour_id);
+          if(!host) result.gaps.push({...gap,label:'Booked visit needs a host task. Check chat.'});
+          else if(host.status!=='open') result.gaps.push({...gap,label:'Host task closed. Check chat.'});
+          else if(calendarEnabled===true && !text(host.calendar_event_id)) result.gaps.push({type:'tour_calendar',label:'Task saved. Calendar unconfirmed. Check chat.',owner:host.owner,tour_id:t.tour_id,key:`journey:calendar:${t.tour_id}`});
+        } catch(error) {
+          result.gaps.push({...gap,label:error.message});
+        }
+      }
+      if(t.timing_issue) result.gaps.push({type:'tour_timing',label:'Check visit outcome time: '+t.timing_issue,owner:t.owner,tour_id:t.tour_id,key:`journey:timing:${t.tour_id}`});
+      if(t.status!=='completed') continue;
+      if(!t.recap) result.gaps.push({type:'tour_recap',label:'Add recap and follow-up.',owner:t.owner,tour_id:t.tour_id,key:`journey:recap:${t.tour_id}`});
+      else if(t.recap.no_next_action!==true && (!text(t.next_action?.task) || !text(t.next_action?.owner) || !rules.date(t.next_action?.due_date))) result.gaps.push({type:'tour_next_action',label:'Add a next step with an owner.',owner:t.owner,tour_id:t.tour_id,key:`journey:next:${t.tour_id}`,...(rules.date(t.next_action?.due_date)?{due_date:t.next_action.due_date}:{})});
+    }
+    return result;
+  }
+
+  function suggestions(current, {today,owner}={}) {
+    const actions=[];
+    const handoff=current.handoff;
+    if(handoff?.status==='accepted' && (!owner || owner===handoff.to_owner)) actions.push({key:`journey:response:${handoff.accepted_event_id}`,task:'Respond to the buyer and confirm the next action.',owner:handoff.to_owner,due_date:rules.businessDate(handoff.accepted_effective_date,1)});
+    for(const gap of current.gaps||[]) {
+      // A broken visit receipt needs reconciliation, not a substitute task.
+      if(['tour_host','tour_calendar'].includes(gap.type)) continue;
+      if(owner && gap.owner!==owner) continue;
+      // A missing date stays missing. Today does not authorize a new deadline.
+      actions.push({key:gap.key,task:gap.label,owner:gap.owner||'',due_date:gap.due_date||''});
+    }
+    for(const t of current.tours||[]) {
+      const a=t.next_action;
+      if(!a || !text(a.task) || !text(a.owner) || !rules.date(a.due_date) || (owner && a.owner!==owner)) continue;
+      actions.push({key:`journey:action:${t.tour_id}:${t.recap?.event_id||t.event_id}`,task:a.task,owner:a.owner,due_date:a.due_date});
+    }
+    return actions;
+  }
+  function hostTaskKey(personId,tourId) {
+    requireValue(text(personId) && text(tourId), 'Confirm buyer and visit before linking the host task.');
+    return `journey-host:${personId}:${tourId}`;
+  }
+
+  function linkedHostTask(interactions,tasks,personId,tourId) {
+    const key=hostTaskKey(personId,tourId);
+    const fail=(message,code='HOST_TASK_AMBIGUOUS',extra={})=>{throw Object.assign(Error(message),{code,...extra});};
+    const receipts=rules.effective(interactions).filter(r=>r.source_key===key);
+    if(!receipts.length) {
+      if(interactions.some(r=>r.source_key===key)) fail('Host task records changed. Check chat.');
+      return null;
+    }
+    if(receipts.length!==1 || receipts[0].event!=='task_opened' || receipts[0].person_id!==personId) fail('Host task records conflict. Check chat.');
+    const receipt=receipts[0],aliases=new Map(),counts=new Map();
+    for(const r of interactions) counts.set(r.interaction_id,(counts.get(r.interaction_id)||0)+1);
+    for(const r of interactions.filter(r=>r.record_type!=='correction')) aliases.set(r.interaction_id,{root:r.interaction_id,ids:new Set([r.interaction_id])});
+    const corrections=interactions.filter(r=>r.record_type==='correction').sort((a,b)=>(a.logged_at||a.timestamp||'').localeCompare(b.logged_at||b.timestamp||'') || (a._row||0)-(b._row||0));
+    for(const c of corrections) {
+      const group=aliases.get(c.corrects_interaction_id); if(!group) continue;
+      group.ids.add(c.interaction_id);aliases.set(c.interaction_id,group);
+    }
+    const group=aliases.get(receipt.interaction_id);
+    if(!group || [...group.ids].some(id=>!text(id) || counts.get(id)!==1)) fail('Host task history conflicts. Check chat.');
+    const linked=tasks.filter(t=>group.ids.has(t.opened_interaction_id));
+    if(!linked.length) fail('Host task saved. Task missing. Restore in chat; do not reopen.','HOST_TASK_MISSING',{receipt,opened_interaction_id:group.root});
+    if(linked.length!==1 || linked[0].person_id!==personId || !text(linked[0].task_id) || tasks.filter(t=>t.task_id===linked[0].task_id).length!==1) fail('Host task link unclear. Check chat before updating.');
+    return linked[0];
+  }
+  return {validate,state,suggestions,hostTaskKey,linkedHostTask};
+})();
+
+// END WORKFLOW JOURNEY
+// BEGIN WORKFLOW LIKELIHOOD
+/* Read-only estimates from confirmed sheet facts. No persistence. Overrides require an authorized attribution. */
+const DeskLikelihood = (() => {
+  const LIKELIHOOD_RULES = {
+    bases:{lead:5,'contact and discovery':15,presentation:25,tour:40,'unit selection':55,reservation:75,'under contract':90,closed:100,lost:0,'on hold':5,'long-term nurture':3},
+    caps:{reservation:89,'on hold':15,'long-term nurture':10}, min:1,max:99,unknownBase:5,
+    weights:{deposit:20,held:18,tour:12,budget:6,timing:6,pricing:7,contract:10,second:9,reply:5,silence:-12,cancel:-10,pause:-15},
+    recentDays:7,silentDays:14,reasonCount:2
+  };
+  const rules=typeof module!=='undefined'&&module.exports?require('./rules.cjs'):DeskRules;
+  const journey=typeof module!=='undefined'&&module.exports?require('./journey.cjs'):DeskJourney;
+  const labels={deposit:'Deposit paid',held:'Villa held',tour:'Tour completed',budget:'Budget confirmed',timing:'Timing confirmed',pricing:'Pricing requested',contract:'Contract requested',second:'Return visit requested',reply:'Recent reply',silence:'No reply',cancel:'Visit setback',pause:'Buying paused'};
+  // A phrase is evidence only in a factual clause. Never scan raw source text,
+  // next steps, task requests or manual notes. Conservative exclusions avoid
+  // credit for plans, questions, negation and hypothetical language.
+  const factual=text=>String(text||'').replace(/\b(?:will|may)\b/g,'might').toLowerCase().split(/[.!?;\n]+/).filter(s=>!(/\b(?:not|no|never|without|hasn['’]t|haven['’]t|didn['’]t|doesn['’]t|don['’]t|isn['’]t|wasn['’]t|if|would|could|might|maybe|plan(?:s|ned)?|hope(?:s)?|should)\b/.test(s)));
+  const says=(text,re)=>factual(text).some(s=>re.test(s));
+  const paused=text=>{
+    const clean=String(text||'').replace(/\b(?:will|may)\b/g,'might').toLowerCase();
+    return clean.split(/[.!?;\n]+/).some(s=>{
+      if(/\b(?:if|would|could|might|maybe|never)\b/.test(s))return false;
+      if(/\b(?:campaigns?|marketing|emails?|calls?|ads|outreach|automation|messages?|follow[ -]?ups?)\b/.test(s)&&!/\b(?:buying|purchase|purchasing)\b/.test(s))return false;
+      if(/\b(?:not buying|won['’]t buy) (?:until|before) next year\b/.test(s)||/\bnot until next year\b/.test(s))return true;
+      return !/\b(?:not|no|isn['’]t|aren['’]t|don['’]t)\b/.test(s)&&/\b(?:pausing|on pause|waiting until next year|buying next year|just looking)\b/.test(s);
+    });
+  };
+  const instant=value=>{
+    if(typeof value!=='string'||!rules.date(value.slice(0,10)))return NaN;
+    if(value.length===10)return Date.parse(value+'T00:00:00Z');
+    if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/.test(value)||+value.slice(11,13)>23||+value.slice(14,16)>59||(/^:/.test(value.slice(16))&&+value.slice(17,19)>59))return NaN;
+    return Date.parse(value);
+  };
+  function prepare(interactions,{now,today}={}) {
+    const clock=instant(now),day=rules.date(today)?today:Number.isFinite(clock)?new Date(clock).toISOString().slice(0,10):'';
+    const valid=value=>{const n=instant(value);return Number.isFinite(n)&&!!day&&(value.length===10?value<=day:Number.isFinite(clock)&&n<=clock);};
+    const safe=(Array.isArray(interactions)?interactions:[]).filter(r=>r&&typeof r==='object'&&(!r.logged_at||valid(r.logged_at))&&(r.record_type==='correction'&&!r.timestamp?valid(r.logged_at):valid(r.timestamp)));
+    return rules.effective(safe).filter(r=>valid(r.timestamp));
+  }
+  function compute(input={}) {
+    let {person={},stage='',interactions=[],units=[],now,today,timeZone='UTC',budgetFlag=false,operators}=input||{};
+    person=person&&typeof person==='object'?person:{};
+    units=(Array.isArray(units)?units:[]).filter(u=>u&&typeof u==='object');
+    const c=LIKELIHOOD_RULES;
+    const budgetReason=!['closed','lost'].includes(stage) && (budgetFlag===true || person.budget_flag===true || typeof person.budget_flag==='string' && !!person.budget_flag.trim()) ? 'budget below the villas they want' : '';
+    const withBudget=reason=>budgetReason || reason.trim().split(/\s+/).slice(0,7).join(' ');
+    const override=rules.likelihoodOverride(person,{operators});
+    const result = computed => ({...computed,percent:override?override.percent:computed.percent,
+      override:!!override,overrideReason:override?person.override_reason:''});
+    if(stage==='closed')return result({percent:100,reason:'',signals:[]});
+    if(stage==='lost')return result({percent:0,reason:'',signals:[]});
+    const clock=typeof now==='string'?Date.parse(now):NaN;
+    const day=rules.date(today)?today:Number.isFinite(clock)?new Date(clock).toISOString().slice(0,10):'';
+    const validAt=value=>{const n=instant(value);return Number.isFinite(n)&&!!day&&(value.length===10?value<=day:Number.isFinite(clock)&&n<=clock);};
+    const rows=prepare(interactions,{now,today:day}).filter(r=>r.person_id&&r.person_id===person.person_id);
+    const found=new Set(),add=key=>found.add(key);
+    let cancelReason='Visit cancelled';
+    const personName=typeof person.name==='string'?person.name.trim().toLowerCase():'';
+    const subjects=['buyer','they','she','he',personName,personName.split(/\s+/)[0]].filter(Boolean);
+    const buyerClause=clause=>{
+      const clean=clause.trim(),subject=subjects.find(name=>clean.startsWith(name+' '));
+      return subject?clean.slice(subject.length+1):'';
+    };
+    const known=value=>typeof value==='string'&&!!value.trim()&&!/\b(?:unknown|unconfirmed|not|unsure|undecided|tbd|clear|maybe|if|would|could)\b/i.test(value);
+    if(known(person.budget_range))add('budget');
+    const timing=typeof person.purchase_timing==='string'?person.purchase_timing:'';
+    // The buyer's own timing field is stronger evidence than a passing next-year
+    // mention in a summary. Only explicit nearer dates override that delay.
+    const nextYear=/\bnext year\b/i.test(timing),year=Number(day.slice(0,4));
+    const months=['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const nearerDate=[...timing.matchAll(/\b(\d{4}-\d{2}-\d{2})\b/g)].some(match=>rules.date(match[1])&&match[1]>=day&&Number(match[1].slice(0,4))===year);
+    const nearerMonth=[...timing.toLowerCase().matchAll(/\b([a-z]+) (\d{4})\b/g)].some(match=>Number(match[2])===year&&months.indexOf(match[1])+1>=Number(day.slice(5,7))&&months.includes(match[1]));
+    const nearer=nextYear&&(nearerDate||nearerMonth);
+    if(nextYear&&!nearer || !nearer&&paused(timing))add('pause');
+    else if(known(timing))add('timing');
+    let lastReply=-Infinity;
+    for(const row of rows) {
+      const text=row.summary||'';
+      const intent=factual(text).filter(clause=>/^(?:asked for|requested)\b/.test(buyerClause(clause)) || row.record_type==='touch'&&/^\s*(?:asked for|requested)\b/.test(clause)).join('.');
+      // A touch means an actual conversation in this sheet's schema.
+      if(row.record_type==='touch')lastReply=Math.max(lastReply,instant(row.timestamp));
+      if(row.record_type==='touch'||row.record_type==='decision') {
+        if(/\b(?:buyer |they |she |he )?(?:asked for|requested) (?:the |a )?(?:prices?|pricing|price list)\b/.test(intent))add('pricing');
+        if(/\b(?:asked for|requested) (?:the |a )?contract\b/.test(intent))add('contract');
+        if(/\b(?:asked for|requested)\b.*\b(?:second|return|another) (?:visit|tour)\b/.test(intent))add('second');
+        if(String(text).split(/[.!?;\n]+/).some(clause=>/^(?:(?:is|are) )?(?:pausing|on pause|waiting until next year|buying next year|not buying|won['’]t buy|not until next year|just looking)\b/.test(buyerClause(clause.toLowerCase()))&&paused(clause)))add('pause');
+        if(row.event==='tour_completed'&&!row.workflow_json&&(!text||factual(text).length))add('tour');
+        if(['tour_cancelled','tour_no_show'].includes(row.event)&&!row.workflow_json){add('cancel');cancelReason=row.event==='tour_no_show'?'Visit missed':'Visit cancelled';}
+      }
+      if(row.unit_id&&validAt(row.deposit_date)&&!units.some(u=>u.unit_id===row.unit_id&&rules.unitStatus(u)==='investor held'))add('deposit');
+    }
+    const reference=Number.isFinite(clock)?clock:instant(day);
+    if(lastReply!==-Infinity&&(reference-lastReply)/86400000<=c.recentDays)add('reply');
+    // Only actual conversation timestamps establish recency or silence.
+    if(lastReply!==-Infinity&&(reference-lastReply)/86400000>=c.silentDays)add('silence');
+    const journeyRows=rows.filter(row=>{if(!row.workflow_json)return false;try{return JSON.parse(row.workflow_json)?.kind==='journey';}catch{return false;}});
+    const state=journeyRows.length?journey.state(journeyRows,person.person_id,{today:day,now,timeZone}):{tours:[]};
+    if(state.tours.some(t=>t.status==='completed'&&!t.timing_issue))add('tour');
+    for(const tour of state.tours.filter(t=>['cancelled','no_show'].includes(t.status)&&!t.timing_issue)){add('cancel');cancelReason=tour.status==='no_show'?'Visit missed':'Visit cancelled';}
+    for(const unit of units.filter(u=>person.person_id&&u.holder_person_id===person.person_id&&rules.unitStatus(u)!=='investor held')) {
+      if(validAt(unit.deposit_date))add('deposit');
+      if(String(unit.status).toLowerCase()!=='held')continue;
+      const holds=rules.workflows(rows,'villa',person.person_id).filter(v=>v.unit_id===unit.unit_id&&v.status!=='requested');
+      const hold=holds.at(-1);
+      // Legacy current held status is a confirmed fact. If a receipt exists,
+      // it must still be accepted and within its actual validity window.
+      if(!hold || hold.status==='accepted'&&validAt(hold.starts_at)&&Number.isFinite(instant(hold.expires_at))&&instant(hold.expires_at)>reference)add('held');
+    }
+    const signals=[...found].sort((a,b)=>Math.abs(c.weights[b])-Math.abs(c.weights[a])||Object.keys(c.weights).indexOf(a)-Object.keys(c.weights).indexOf(b));
+    const percent=Math.max(c.min,Math.min(c.caps[stage]??c.max,(c.bases[stage]??c.unknownBase)+signals.reduce((n,s)=>n+c.weights[s],0)));
+    const base=Math.max(c.min,Math.min(c.caps[stage]??c.max,c.bases[stage]??c.unknownBase));
+    return result({percent,reason:withBudget(percent===base?'':signals.slice(0,c.reasonCount).map(s=>s==='cancel'?cancelReason:labels[s]).join(', ')),signals});
+  }
+  return {compute,prepare,LIKELIHOOD_RULES};
+})();
+
+// END WORKFLOW LIKELIHOOD
+// BEGIN WORKFLOW UI
+// Repairs stay in the desk owner's Review queue, never on the sales dashboard.
+// Recognize legacy wording too, before it has been recategorized as data repair.
+function isDataRepair(item) {
+  const reason=String(item.reason||'').trim().toLowerCase().replace(/[_-]+/g,' ');
+  const text=[item.question,item.task].filter(Boolean).join(' ');
+  return ['data repair','records mismatch'].includes(reason)||/\b(?:misalign(?:ed|ment)?|broken formulas?|missing receipts?|duplicate rows?|schema (?:mapping|keys?|mismatch)|history rows?|calendar receipts?)\b/i.test(text)||/\b(?:row|column)\s+(?:alignment|mismatch|mapping|repair)\b/i.test(text);
+}
+const salesOpenQuestions=openQuestions;
+openQuestions=()=>salesOpenQuestions().filter(r=>!isDataRepair(r));
+function isRepairTask(task) {
+  if(isDataRepair(task))return true;
+  const opening=records('Interactions').find(r=>r.interaction_id===task.opened_interaction_id);
+  // A repair's evidence link may point at a genuine visit or sales task.
+  // Only repair-authored work is hidden, never the evidence it references.
+  return !!opening&&(isDataRepair({task:opening.summary})||records('Review').some(r=>isDataRepair(r)&&String(opening.source_key||'').startsWith('review:'+r.review_id+':')));
+}
+function isRepairInteraction(row) {
+  return isDataRepair({task:row.summary})||records('Review').some(r=>isDataRepair(r)&&String(row.source_key||'').startsWith('review:'+r.review_id+':'))||records('Tasks').some(t=>isRepairTask(t)&&[t.opened_interaction_id,t.closed_interaction_id].includes(row.interaction_id));
+}
+const sourceActivityRows=activityRows;
+activityRows=()=>sourceActivityRows().filter(r=>!isRepairInteraction(r));
+const sourceTaskModel=model, salesTaskModels=new WeakMap();
+model=function(){
+  const original=sourceTaskModel();
+  if(salesTaskModels.has(original))return salesTaskModels.get(original);
+  const tasks=original.tasks.filter(t=>!isRepairTask(t)),removed=new Set(original.tasks.filter(isRepairTask));
+  const people=Object.fromEntries(Object.entries(original.people).map(([id,p])=>[id,{...p,tasks:p.tasks.filter(t=>!removed.has(t)),...(isDataRepair({task:p.next_step})?{next_step:'',next_step_due:''}:{})}]));
+  const sales={...original,tasks,open:tasks.filter(t=>t.status==='open'),people};
+  salesTaskModels.set(original,sales);return sales;
+};
+
+// Likelihood stays in the existing in-memory model, never the browser cache.
+const cachedLikelihoodViews=new WeakSet();
+const likelihoodAvailable=()=>!!D&&!cachedLikelihoodViews.has(D)&&['People','Pipeline','Interactions'].every(tab=>D.T[tab]&&!D.errors?.[tab]);
+function likelihoodScores() {
+  if(!likelihoodAvailable())return null;
+  const m=model();
+  if(m.likelihood)return m.likelihood;
+  const timeZone=tz(),z=zoneParts(timeZone),clock={today:z.date,now:`${z.date}T${z.time}${z.off}`,timeZone},group=(rows,key)=>{
+    const out=new Map();for(const row of rows){const id=row[key];if(!out.has(id))out.set(id,[]);out.get(id).push(row);}return out;
+  };
+  // Resolve corrections before grouping: a correction can change buyer identity.
+  const effective=DeskLikelihood.prepare(records('Interactions'),clock),interactions=group(effective,'person_id');
+  // Inventory notes intentionally have no buyer. Resolve status before buyer
+  // grouping so an investor holding suppresses stale buyer deposit evidence.
+  // Only status enters scoring: opening Units must not add hold/deposit signals.
+  const statuses=new Map(records('Units').filter(u=>u.unit_id).map(u=>[u.unit_id,{unit_id:u.unit_id,status:u.status}]));
+  for(const row of effective)if(row.unit_id&&['available','held','investor held','reserved','promesa signed','sold'].includes(DeskRules.unitStatus({status:row.unit_status})))statuses.set(row.unit_id,{unit_id:row.unit_id,status:row.unit_status});
+  const units=[...statuses.values()];
+  m.likelihood=new Map(Object.values(m.people).map(p=>{
+    const rows=interactions.get(p.person_id)||[],result=DeskLikelihood.compute({person:p,stage:p.stage,interactions:rows,units,...clock,operators:D.operators});
+    return [p.person_id,result];
+  }));
+  return m.likelihood;
+}
+const likelihoodOf=p=>likelihoodScores()?.get(p.person_id)||null;
+function likelihoodMarkup(p,result){
+ const override=result.override&&result.overrideReason?`<br><span>${esc(displayText(result.overrideReason))}</span>`:'';
+ return `<strong>Likely to buy: ${result.percent}%</strong>${result.reason?'<br><span>'+esc(displayText(result.reason))+'</span>':''}${override}`;
+}
+function likelihoodLine(p) {
+  const result=likelihoodOf(p);
+  return `<p class="likelihood" data-likelihood-person="${esc(p.person_id)}" aria-label="Likelihood"${result?'':' hidden'}>${result?likelihoodMarkup(p,result):''}</p>`;
+}
+function refreshLikelihoodDisplay() {
+  document.querySelectorAll?.('[data-likelihood-person]').forEach(node=>{
+    const p=model().people[node.dataset.likelihoodPerson],result=p&&likelihoodOf(p);
+    node.hidden=!result;
+    node.innerHTML=result?likelihoodMarkup(p,result):'';
+  });
+}
+const likelihoodOrder=(a,b)=>(likelihoodOf(b)?.percent||0)-(likelihoodOf(a)?.percent||0)||a.name.localeCompare(b.name);
+const nurtureTrackLabel=track=>({unbooked:'Before booking',booked:'After booking','second-home':'Second home',investment:'Investment','long-term':'Long term',general:'General'}[track]||'Emails');
+const stageLabel=value=>({'contact and discovery':'Discovery','long-term nurture':'Nurture','unit selection':'Selection'}[value]||cap(value||'No stage'));
+
+// Roles select the information shown.
+let homeRole = '', homeActor='', homeSelected=false;
+const roleForViewer = name => /^Jorge\b/i.test(name||'')?'jorge':/^Jackson\b/i.test(name||'')?'leadership':/^Freddie\b/i.test(name||'')?'freddie':'alix';
+function initializeHomeRole(){$('home-role').innerHTML=options([['freddie','Freddie'],['alix','Alix'],['leadership','Jackson'],...(roster().some(name=>/^Jorge\b/i.test(name))?[['jorge','Jorge']]:[])],homeRole);if(!homeSelected&&(!homeRole||homeActor!==me)){homeRole=roleForViewer(me);homeActor=me;}$('home-role').value=homeRole;}
+const leadershipView = () => ['leadership','jorge'].includes(homeRole);
+const temperatureLabel = value => ({cold:'Cold',warm:'Warm',hot:'Hot','not a fit':'Not a fit'}[value] || 'Unrated');
+const unitStatus = DeskRules.unitStatus;
+const unitDisplayStatus = u => unitStatus(u)==='held'?'On hold':unitStatus(u)==='promesa signed'?'Under contract':cap(unitStatus(u)||'No status');
+const villaSize = u => {
+  const areas=DeskRules.unitAreas(u),number=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n);
+  return areas.size_m2!=null?`${number(areas.size_m2)} m² · ${number(areas.size_ft2)} ft²`:(u.size||u.Size)?`${u.size||u.Size} ${u.size_unit||u['Size unit']||''}`.trim():'No size';
+};
+const villaPrice = u => {
+  if(!u.list_price)return 'No price';
+  const amount=Number(String(u.list_price).replace(/[$,]/g,''));
+  if(!Number.isFinite(amount))return displayText(u.list_price);
+  const currency=String(u.currency||'USD').toUpperCase();
+  return new Intl.NumberFormat('en-US',{style:'currency',currency,currencyDisplay:'narrowSymbol',maximumFractionDigits:2,minimumFractionDigits:0}).format(amount);
+};
+let privateValuesMemo=null;
+function privateDisplayValues(){
+  if(privateValuesMemo?.data===D)return privateValuesMemo.values;
+  const values=new Set();
+  for(const tab of ['People','Interactions','Partners'])for(const row of records(tab))for(const key of ['email','phone','instagram_handle'])for(const value of (key==='email'||key==='phone'?String(row[key]||'').split(';'):[String(row[key]||'')])){const text=value.trim();if(key==='email'&&/^[\w.+-]+@[\w.-]+\.[a-z]{2,}$/i.test(text)||key==='phone'&&/^\+?[\d .()-]{8,}$/.test(text)||key==='instagram_handle'&&/^@?[a-z0-9_.]{3,}$/i.test(text)&&!roster().some(name=>name.toLowerCase()===text.replace(/^@/,'').toLowerCase()))values.add(text);}
+  privateValuesMemo={data:D,values:[...values].sort((a,b)=>b.length-a.length)};
+  return privateValuesMemo.values;
+}
+function displayText(value) {
+  let text=noIds(String(value||''));
+  for(const privateValue of privateDisplayValues())text=text.replace(new RegExp(escRe(privateValue),'gi'),/^[\w.+-]+@[\w.-]+\.[a-z]{2,}$/i.test(privateValue)?'the email address on file':'[private detail]');
+  text=text.replace(/[\w.+-]+@[\w.-]+\.[a-z]{2,}/gi,'the email address on file')
+    .replace(/\bliteral\s+[^,;.!]*?\btag\b/gi,'source')
+    .replace(/\bcampaign_id\b/gi,'campaign').replace(/\bC\d+\b\??/g,'')
+    .replace(/\bscheduled job\b/gi,'Desk').replace(/\bchat note\b/gi,'Chat');
+  text=({'ad lead':'Ad','web form':'Website','chat transcript':'Chat','chat voice note':'Chat','email':'Email','whatsapp':'WhatsApp'}[text.toLowerCase()]||text);
+  if(text==='Buyer name missing')text='Name missing';
+  text=text.replace(/https?:\/\/[^\s<>]+|[\w.+-]+@[\w.-]+\.[a-z]{2,}|@[a-z0-9_.]{2,}/gi,'[private detail]');
+  // Dates and appointment times are not phone numbers. Currency amounts stay readable.
+  text=text.replace(/\+\d[\d .()-]{6,}\d|\(?\d{3}\)?[ .-]\d{3}[ .-]\d{4}|\b\d{10,15}\b/g,(match,index,full)=>{
+    const before=full.slice(Math.max(0,index-12),index),after=full.slice(index+match.length,index+match.length+12);
+    if(/(?:[$€£]|USD|MXN|EUR|GBP)\s*$/i.test(before)||/^\s*(?:USD|MXN|EUR|GBP)\b/i.test(after))return match;
+    return '[private detail]';
+  });
+  return text.replace(/\s*\(\s*\)/g,'').replace(/ {2,}/g,' ').trim();
+}
+let detailRequest=0;
+function openBuyer(id,ready=false) {
+  const needed=['People','Pipeline','Tasks','Interactions'];
+  if(mcp&&!previewMode&&!ready){
+    const request=++detailRequest;
+    ensureTabs(needed).then(ok=>{if(ok&&request===detailRequest)openBuyer(id,true);});
+    return;
+  }
+
+  const p=model().people[id];if(!p)return;
+  const statuses=activityStatuses(id),next=p.tasks[0],nextText=next?.task||(p.next_step&&p.next_step!=='clear'?p.next_step:'No task'),nextDate=next?.due_date||p.next_step_due;
+  const history=DeskRules.effective(records('Interactions')).filter(i=>i.person_id===id&&!isRepairInteraction(i)).map(i=>({at:i.timestamp||i.logged_at||'',by:i.logged_by||'',status:statuses.get(i.interaction_id),text:[displayText(i.summary)||cap((i.event||'Update').replace(/_/g,' ')),i.stage?'Sales stage: '+cap(i.stage):''].filter(Boolean).join(' / ')}));
+  for(const t of records('Tasks').filter(t=>t.person_id===id&&!isRepairTask(t)&&t.status==='done'&&!history.some(h=>h.at===(t.closed_at||'')&&h.text.includes(displayText(t.task))))) {
+    if(!records('Interactions').some(i=>i.interaction_id===t.closed_interaction_id))history.push({at:t.closed_at||'',text:'Task done: '+displayText(t.task)});
+  }
+  history.sort((a,b)=>(Date.parse(a.at)||0)-(Date.parse(b.at)||0));
+  const tours=journeyOf(id).tours.filter(t=>t.status==='booked');
+  showDetail(displayText(p.name),`<div class="profile-header"><div class="profile-meta">${p.lead_temperature?`<span class="temperature ${esc(['cold','warm','hot'].includes(p.lead_temperature)?p.lead_temperature:'neutral')}">${esc(temperatureLabel(p.lead_temperature))}</span>`:''}${salesStagePill(p.stage)}<span>${esc(displayText(p.owner||'Unassigned'))}</span></div><p class="next-step">${esc(displayText(nextText))}${isDate(nextDate)?`<br><time>${esc(fmtDay(nextDate))}</time>`:''}</p></div>
+  ${likelihoodLine(p)}
+
+  <details class="profile-section profile-details"><summary>Details</summary>${p.lead_id?`<p class="note">${esc(p.lead_id)}</p>`:''}<section class="profile-section"><h3>Temperature</h3><p>Cold: Early interest</p><p>Warm: Engaged</p><p>Hot: Sales ready</p><p>Not a fit: Outside the offering</p></section>${p.stage_override&&p.stage_override_reason?`<p>${esc(displayText('Stage set by '+p.stage_override_reason.replace(/^(?:Stage set by|Set by)\s+/i,'')))}</p>`:''}<section class="profile-section"><h3>Profile</h3><dl>${[['Source',p.source],['Channel',p.first_channel],...(campaignForBuyer(id)?[['Campaign',campaignForBuyer(id)]]:[]),['Interest',p.interest_type],['Timing',p.purchase_timing],['Contact preference',p.preferred_channel]].map(([label,value])=>`<dt>${label}</dt><dd>${esc(displayText(value)||'Not recorded')}</dd>`).join('')}</dl></section><section class="profile-section"><h3>Tasks</h3>${p.tasks.map(t=>`<p>${esc(displayText(t.task))}<br><span class="note">${esc(displayText(t.owner||'Unassigned'))} / ${esc(t.due_date?fmtDay(t.due_date):'No date')}</span></p>`).join('')||'<p class="note">None open.</p>'}</section>
+  <section class="profile-section"><h3>Tours</h3>${tours.map(t=>`<p>${statusPill(tourStatusLabel(t),t.preparation?'tour_preparation':'tour_booked')} / ${esc(journeyTime(t.starts_at))} / ${esc(displayText(t.owner||'Unassigned'))}</p>`).join('')||'<p class="note">None booked.</p>'}</section>
+  <section class="profile-section"><h3>Activity History</h3><ol class="timeline">${history.map(h=>`<li><time>${esc(h.at?fmtDay(h.at):'No date')}${h.by?' / '+esc(displayText(h.by)):''}</time>${h.status?`${esc(h.status.text)}<details><summary>Note</summary><p>${esc(h.text)}</p></details>`:esc(h.text)}</li>`).join('')||'<li>No activity.</li>'}</ol></section></details>`);
+}
+function openVilla(id) {
+
+  const u=records('Units').find(u=>u.unit_id===id);if(!u)return;
+  const property=records('Properties').find(p=>p.property_id===u.property_id);
+  showDetail('Villa '+id,`<p class="lede">${esc(unitDisplayStatus(u))}</p><dl>${[...(property?[['Property',property.name]]:[]),['Type',u.type||'Not recorded'],['Size',villaSize(u)],['Price',villaPrice(u)],['Held by',u.holder_person_id?personName(u.holder_person_id):'No buyer']].map(([k,v])=>`<dt>${k}</dt><dd>${esc(displayText(v))}</dd>`).join('')}</dl>`);
+}
+function campaignIdForBuyer(id) {
+  const ids=[...new Set(DeskRules.effective(records('Interactions')).filter(i=>i.person_id===id&&i.campaign_id).map(i=>i.campaign_id))];
+  if(ids.length!==1)return '';
+  const names=[...new Set(records('Campaigns').filter(c=>c.campaign_id===ids[0]).map(c=>c.campaign_name).filter(Boolean))];return names.length===1?ids[0]:'';
+}
+function campaignForBuyer(id) {const key=campaignIdForBuyer(id);return key?records('Campaigns').find(c=>c.campaign_id===key)?.campaign_name||'':'';}
+function campaignOverview() {
+  if(!D.T.Campaigns)return '';
+  const rows=records('Campaigns'),groups=[...new Set(rows.map(c=>c.campaign_id).filter(Boolean))];
+  return `<section class="profile-section"><h2>Campaigns</h2>${groups.length?`<div class="campaign-table"><table><thead><tr><th>Campaign</th><th>Spend</th><th>Ad leads</th><th>Buyers</th></tr></thead><tbody>${groups.map(id=>{const all=rows.filter(c=>c.campaign_id===id),unique=new Set(all.map(c=>c.week_start+'|'+c.week_end)),currencies=[...new Set(all.map(c=>c.currency))],valid=unique.size===all.length&&currencies.length===1,number=k=>valid&&all.every(c=>String(c[k]).trim()!==''&&Number.isFinite(Number(c[k])))?all.reduce((n,c)=>n+Number(c[k]),0):'Unknown',names=[...new Set(all.map(c=>c.campaign_name))],name=names.length===1?names[0]:'Check campaign',buyers=Object.values(model().people).filter(p=>campaignIdForBuyer(p.person_id)===id).sort((a,b)=>temperatureRank(buyerTemperature(a))-temperatureRank(buyerTemperature(b)));return `<tr><td>${esc(displayText(name))}<br><span class="note">${esc(all.map(c=>c.week_start+' to '+c.week_end).join(', '))}</span></td><td>${esc(String(number('spend')))} ${valid?esc(displayText(currencies[0]||'')):''}</td><td>${esc(String(number('platform_lead_count')))}</td><td>${buyers.length}${buyers.map(p=>`<p><button class="link" data-act="buyer" data-person="${esc(p.person_id)}">${esc(displayText(p.name))} ${esc(temperatureLabel(buyerTemperature(p)))}</button><br><span class="note">${esc(displayText(stageLabel(p.stage)))}</span></p>`).join('')}</td></tr>`;}).join('')}</tbody></table></div>`:'<p class="note">No campaigns.</p>'}</section>`;
+}
+function pricingSignals(people){
+ const counts=new Map();
+ for(const p of people)if(p.budget_flag){
+   const types=['Casita','Nativo','Ola'];
+   const interest=types.filter(type=>new RegExp('\\b'+type+'\\b','i').test(p.interest_type||''));
+   const mismatch=/^below\s+(Casita|Nativo|Ola)\b|^(Casita|Nativo|Ola)\s+starts\b|\bbelow\s+(Casita|Nativo|Ola)\b/i.exec(p.budget_flag);
+   const type=interest.length===1?interest[0]:types.find(type=>type.toLowerCase()===(mismatch?.[1]||mismatch?.[2]||mismatch?.[3]||'').toLowerCase());
+   if(!type)continue;
+   counts.set(type,(counts.get(type)||0)+1);
+ }
+ return counts.size?`<details><summary>Pricing</summary>${[...counts].map(([type,count])=>`<p>${esc(displayText(type))}: ${count}</p>`).join('')}</details>`:'';
+}
+function renderRoleHome() {
+  initializeHomeRole();
+  $('who').hidden=leadershipView();
+  const people=Object.values(model().people),units=records('Units'),tasks=model().open;
+  const stat=(label,value)=>`<div class="stat"><strong>${value}</strong>${esc(label)}</div>`;
+  if(leadershipView()){$('role-home').innerHTML=`<h2>Overview</h2><div class="home-stats">${stat('Active buyers',people.filter(model().active).length)}${D.T.Units?stat('Held villas',units.filter(u=>unitStatus(u)==='held').length)+stat('Deposits',units.filter(u=>unitStatus(u)!=='investor held'&&DeskRules.date(u.deposit_date)).length):''}${stat('Claude’s questions',openQuestions().length)}${stat('Overdue tasks',tasks.filter(t=>t.due_date&&t.due_date<today()).length)}</div>${pricingSignals(people)}<h3>Stages</h3>${pipelineGroups(people).map(g=>`<p><button class="link" data-act="stage-filter" data-stage="${esc(g.s)}">${esc(stageLabel(g.s))}: ${g.list.length}</button></p>`).join('')}<h3>Temperature</h3>${['cold','warm','hot','not a fit'].map(t=>`<p>${temperatureLabel(t)}: ${people.filter(p=>p.lead_temperature===t).length}</p>`).join('')}<p>Unrated: ${people.filter(p=>!['cold','warm','hot','not a fit'].includes(p.lead_temperature)).length}</p><h3>Claude’s questions</h3>${openQuestions().map(q=>`<p>${esc(questionText(q))}</p>`).join('')||'<p class="note">No questions.</p>'}`;return;}
+  const tours=people.flatMap(p=>journeyOf(p.person_id).tours.filter(t=>t.status==='booked').map(t=>({p,t}))).filter(({t})=>homeRole==='alix'||/^Freddie\b/i.test(t.owner||''));
+  $('role-home').innerHTML=`<h2>${homeRole==='alix'?'Team':'Freddie’s day'}</h2>${homeRole==='alix'?`<div class="home-stats">${stat('Tasks',tasks.length)}${stat('Unassigned',noOwnerList().length)}${stat('Claude’s questions',openQuestions().length)}${D.T.Partners?stat('Partners',records('Partners').length):''}</div><div class="btns"><button class="chip" data-view="noowner">Unassigned</button><button class="chip" data-view="questions">Claude’s questions</button></div>${D.T.Partners?`<details><summary>Partners</summary><div id="partner-list">${partnerList()}</div></details>`:''}`:''}<h3>Tours</h3>${tours.map(({p,t})=>`<p><button class="link" data-act="buyer" data-person="${esc(p.person_id)}">${esc(p.name)}</button> / ${esc(journeyTime(t.starts_at))} / ${esc(t.owner||'Unassigned')}</p>`).join('')||'<p class="note">None booked.</p>'}${pricingSignals(people)}`;
+}
+let searchRequest=0,searchTimer=null;
+function renderGlobalSearch(value,ready=false) {
+  const q=value.trim().toLowerCase(),box=$('search-results');box.hidden=!q;
+  if(!ready){searchRequest++;clearTimeout(searchTimer);}
+  if(!q){box.innerHTML='';return;}
+  const needed=['People','Tasks'];
+  if(mcp&&!previewMode&&!ready&&needed.some(tab=>!D.T[tab]||D.errors?.[tab])){
+    const request=searchRequest;box.innerHTML='<p>Searching</p>';
+    searchTimer=setTimeout(()=>{ensureTabs(needed).then(ok=>{if(ok&&request===searchRequest)renderGlobalSearch(value,true);});},200);
+    return;
+  }
+  const buyers=Object.values(model().people).filter(p=>searchMatches(q,p.name)),units=records('Units').filter(u=>searchMatches(q,u.unit_id,u.type,unitStatus(u),records('Properties').find(p=>p.property_id===u.property_id)?.name)),tasks=model().tasks.filter(t=>searchMatches(q,t.task,buyerOf(t),t.owner));
+  const matches=[...buyers.map(p=>({kind:'buyer',record:p})),...units.map(u=>({kind:'unit',record:u})),...tasks.map(t=>({kind:'task',record:t}))];
+  box.innerHTML=`<h2>Search results</h2>${matches.slice(0,20).map(({kind,record:r})=>kind==='buyer'?`<p>Buyer / <button class="link" data-act="buyer" data-person="${esc(r.person_id)}">${esc(displayText(r.name))}</button>${r.lead_temperature?' / '+esc(temperatureLabel(r.lead_temperature)):''}</p>`:kind==='unit'?`<p>Villa / <button class="link" data-act="villa" data-unit="${esc(r.unit_id)}">${esc(displayText(r.unit_id))}</button> / ${esc(displayText(cap(unitStatus(r))))}</p>`:`<p>Task / ${r.person_id?`<button class="link" data-act="buyer" data-person="${esc(r.person_id)}">${esc(displayText(r.task))}</button>`:esc(displayText(r.task))} / ${esc(displayText(r.owner||'Unassigned'))}</p>`).join('')}${matches.length?'':'<p>No matches.</p>'}`;
+}
+// Source for the inline dashboard workflow UI. Run scripts/sync-dashboard.mjs after editing.
+const buyerView = {search:'', owner:'all', stage:'all', mode:'board', unit:'', temperature:'all', sort:'current',preset:''};
+const records = tab => D.T[tab]?.rows || [];
+const workflowRows = (kind, person) => DeskRules.workflows(records('Interactions'), kind, person);
+const lastWorkflow = (kind, person) => workflowRows(kind, person).at(-1) || {};
+function buyerFilterMatch(p,v=buyerView) {
+ return p.name&&savedListMatches(p,v.preset)&&searchMatches(v.search,p.name)&&
+  (v.temperature==='all'||buyerTemperature(p)===v.temperature)&&
+  (v.owner==='all'||(p.owner||'')===v.owner)&&
+  (v.stage==='all'||p.stage===v.stage||(v.stage==='needs a stage'&&!DeskRules.stages.includes(p.stage)));
+}
+function filteredBuyers() {return Object.values(model().people).filter(p=>buyerFilterMatch(p));}
+const options = (list, value) => list.map(([v,l])=>`<option value="${esc(v)}"${v===value?' selected':''}>${esc(l)}</option>`).join('');
+function renderBuyerFilters() {
+  renderSavedLists('pipeline');
+  const owner=$('buyer-owner'), stage=$('buyer-stage');
+  if (!owner || !stage) return;
+  owner.innerHTML=options([['all','Everyone'],['','Unassigned'],...roster().map(n=>[n,n])],buyerView.owner);
+  stage.innerHTML=options([['all','All stages'],...DeskRules.stages.map(n=>[n,stageLabel(n)]),['needs a stage','No stage']],buyerView.stage);
+  if(!likelihoodAvailable())buyerView.sort='current';
+  $('buyer-sort').innerHTML=options([['current','Current order'],...(likelihoodAvailable()?[['likelihood','Likelihood']]:[])],buyerView.sort);
+  $('buyer-temperature').innerHTML=options([['all','All ratings'],...['cold','warm','hot','not a fit'].map(t=>[t,temperatureLabel(t)])],buyerView.temperature);
+}
+function questionPerson(r) {
+  const linked=records('Interactions').find(i=>i.interaction_id===r.interaction_id);
+  if (linked?.person_id && model().people[linked.person_id]) return linked.person_id;
+  const ids=(r.candidate_ids||'').split(';').map(x=>x.trim()).filter(x=>model().people[x]);
+  return ids.length===1 ? ids[0] : '';
+}
+function showDetail(title, body) {
+  const box=$('detail');
+  $('detail-content').innerHTML=`<div class="head"><h2 id="detail-title">${esc(title)}</h2><button class="btn quiet" data-act="detail-close">Close</button></div>${body}`;
+  if (!box.open) box.showModal();
+
+}
+// Shared matching keeps tab search consistent with the global search.
+const searchMatches=(query,...values)=>values.join(' ').toLowerCase().includes(query.trim().toLowerCase());
+const tabViews={marketing:{search:'',temperature:'all',nurture:'all',preset:''},units:{search:'',status:'all',type:'all'},changes:{search:'',buyer:'all',team:'all',kind:'all'}};
+const buyerTemperature=p=>['hot','warm','cold','not a fit'].includes(p.lead_temperature)?p.lead_temperature:'unrated';
+const temperatureRank=value=>({hot:0,warm:1,cold:2}[value]??3);
+const nurtureStatus=s=>s.status||'not enrolled';
+const savedLists=[['quiet','Going cold'],['toured','Toured, quiet'],['unassigned','Unassigned'],['stage','Needs a stage']];
+const savedListPrevious=new Map();
+let savedListMemo=null;
+function savedListFacts() {
+ const z=zoneParts(tz()),clock={today:z.date,now:`${z.date}T${z.time}${z.off}`,timeZone:tz()};
+ if(savedListMemo?.data===D&&savedListMemo.now===clock.now)return savedListMemo.facts;
+ const rows=DeskLikelihood.prepare(records('Interactions'),clock),byPerson=new Map(),facts=new Map();
+ for(const row of rows){if(!byPerson.has(row.person_id))byPerson.set(row.person_id,[]);byPerson.get(row.person_id).push(row);}
+ for(const p of Object.values(model().people)){
+  const history=byPerson.get(p.person_id)||[],touches=history.filter(r=>r.record_type==='touch');
+  const last=touches.map(r=>r.timestamp).sort((a,b)=>Date.parse(a)-Date.parse(b)).at(-1)||(!D.T.Interactions?p.last_touch:'');
+  const age=DeskRules.date(last)?(Date.parse(clock.today)-Date.parse(last))/86400000:(Date.parse(clock.now)-Date.parse(last))/86400000;
+  facts.set(p.person_id,{quiet:Number.isFinite(age)&&age>=7});
+ }
+ savedListMemo={data:D,now:clock.now,facts};return facts;
+}
+function savedListMatches(p,preset) {
+ if(!preset)return true;
+ if(preset==='unassigned')return !p.owner?.trim();
+ if(preset==='stage')return !DeskRules.stages.includes(p.stage);
+ const fact=savedListFacts().get(p.person_id);
+ return !!fact?.quiet&&(preset==='quiet'?(STAGES.slice(0,STAGES.indexOf('reservation')).includes(p.stage)&&!['not a fit','not suitable'].includes(p.lead_temperature)&&(p.lead_temperature==='hot'||(likelihoodOf(p)?.percent??0)>=60)):preset==='toured'?['tour','unit selection'].includes(p.stage):false);
+}
+function savedListSelection(state,tab,key) {
+ return {...state,preset:key,temperature:'all',...(tab==='pipeline'?{owner:key==='unassigned'?'':'all',stage:key==='stage'?'needs a stage':'all'}:{})};
+}
+function renderSavedLists(tab) {
+ const state=tab==='pipeline'?buyerView:tabViews.marketing,people=Object.values(model().people).filter(p=>p.name);
+ $(''+(tab==='pipeline'?'p-presets':'m-presets')).innerHTML=savedLists.map(([key,label])=>{
+  const selection=savedListSelection(state,tab,key),count=people.filter(p=>tab==='pipeline'?buyerFilterMatch(p,selection):marketingMatch({p,s:lastWorkflow('nurture',p.person_id)},'',selection)).length;
+  return `<button class="chip" data-act="saved-list" data-tab="${tab}" data-preset="${key}" aria-pressed="${state.preset===key}">${label} (${count})</button>`;
+ }).join('');
+}
+function applySavedList(tab,key) {
+ if(!['pipeline','marketing'].includes(tab)||!savedLists.some(([value])=>value===key))return;
+ const state=tab==='pipeline'?buyerView:tabViews.marketing,fields=tab==='pipeline'?['owner','stage','temperature']:['temperature'];
+ if(state.preset===key){Object.assign(state,savedListPrevious.get(tab)||{});state.preset='';savedListPrevious.delete(tab);}
+ else {
+  if(!state.preset)savedListPrevious.set(tab,Object.fromEntries(fields.map(field=>[field,state[field]])));
+  Object.assign(state,savedListSelection(state,tab,key));
+ }
+ if(tab==='pipeline')renderPipeline();else renderMarketing();
+}
+
+function facetOptions(rows,key,selected,label=cap,preferred=[],domain=rows) {
+ const values=[...new Set([...domain.map(key),...(selected!=='all'?[selected]:[])])],ordered=[...preferred.filter(v=>values.includes(v)),...values.filter(v=>!preferred.includes(v)).sort()];
+ return options([['all',`All (${rows.length})`],...ordered.map(v=>[v,`${label(v)} (${rows.filter(r=>key(r)===v).length})`])],selected);
+}
+function tabFilter(id,label,rows,key,selected,words=cap,preferred=[],domain=rows) {
+ $(id).innerHTML=`<label class="field">${label}<select class="input" data-tab-filter="${id}">${facetOptions(rows,key,selected,words,preferred,domain)}</select></label>`;
+}
+function marketingRows() {
+ return Object.values(model().people).map(p=>({p,s:lastWorkflow('nurture',p.person_id)})).sort((a,b)=>temperatureRank(buyerTemperature(a.p))-temperatureRank(buyerTemperature(b.p)));
+}
+function marketingMatch({p,s},skip='',v=tabViews.marketing) {
+ const partner=records('Partners').find(r=>r.partner_id===p.referring_partner_id);
+ return savedListMatches(p,v.preset)&&searchMatches(v.search,p.name,p.owner,partner?.name,campaignForBuyer(p.person_id),...DeskRules.effective(records('Interactions')).filter(r=>r.person_id===p.person_id).flatMap(r=>[r.summary,r.unit_id]),...records('Units').filter(u=>u.holder_person_id===p.person_id).map(u=>u.unit_id))&&
+  (skip==='temperature'||v.temperature==='all'||buyerTemperature(p)===v.temperature)&&
+  (skip==='nurture'||v.nurture==='all'||nurtureStatus(s)===v.nurture);
+}
+function renderMarketing() {
+ renderSavedLists('marketing');
+ const all=marketingRows(),v=tabViews.marketing,list=all.filter(x=>marketingMatch(x)),enrolled=all.some(({s})=>s.enrollment_id||s.status);
+ tabFilter('m-temperature','Temperature',all.filter(x=>marketingMatch(x,'temperature')),x=>buyerTemperature(x.p),v.temperature,temperatureLabel,['hot','warm','cold']);
+ tabFilter('m-nurture','Nurture',all.filter(x=>marketingMatch(x,'nurture')),x=>nurtureStatus(x.s),v.nurture,cap,['active','paused','pending','needs attention','opted out','not enrolled']);
+ $('m-body').innerHTML=campaignOverview()+`<div class="list">${list.map(({p,s})=>`<div class="row"><div><button class="link" data-act="buyer" data-person="${esc(p.person_id)}">${esc(displayText(p.name))} <span class="temperature">${esc(temperatureLabel(buyerTemperature(p)))}</span></button>${enrolled?`<div class="why">${esc(s.track?nurtureTrackLabel(s.track):'No track')} / ${esc(cap(nurtureStatus(s)))} / ${esc(displayText(p.owner||'Unassigned'))}</div>`:''}</div></div>`).join('')||'<p>No buyers.</p>'}</div>`;
+}
+const journeyActionLabels = {qualification:'Readiness',handoff_offered:'Handoff offered',handoff_accepted:'Handoff accepted',tour_requested:'Tour requested',tour_booked:'Tour booked',tour_rescheduled:'Tour rescheduled',tour_preparation:'Prep done',tour_cancelled:'Cancelled',tour_no_show:'No-show',tour_completed:'Toured',tour_recap:'Recap done'};
+const readinessLabels={ready:'Tour ready','needs information':'Needs information','not ready':'Not ready','not a fit':'Not suitable'};
+const holdStatusLabels={requested:'Hold requested',accepted:'On hold',release:'Hold released'};
+const tourStatusLabel = tour => tour.recap?'Recap done':tour.status==='booked'&&tour.preparation?'Prep done':({requested:'Tour requested',booked:'Tour booked',completed:'Toured',cancelled:'Cancelled',no_show:'No-show'}[tour.status]||'No status');
+const statusPill = (label,key='neutral') => `<span class="status-pill status-${esc(key)}">${esc(label)}</span>`;
+const salesStagePill = (stage,compact=false) => `<span class="status-pill sales-stage" aria-label="Sales stage: ${esc(stageLabel(stage))}">${compact?'':'Sales stage: '}${esc(stageLabel(stage))}</span>`;
+function activityStatuses(id){
+  const effective=DeskRules.effective(records('Interactions')).filter(r=>r.person_id===id),prefix=[],labels=new Map(),priorByTour=new Map(),seenEvents=new Set();
+  const text=value=>typeof value==='string'&&value.trim();
+  for(const row of effective){
+    prefix.push(row);let v;try{v=JSON.parse(row.workflow_json||'null');}catch{continue;}
+    if(v?.kind==='villa'){
+      const day=String(row.timestamp||row.logged_at||'').slice(0,10),expected={requested:'hold_requested',accepted:'hold_accepted',release:'hold_released'}[v.status];
+      const receipt=v.version===1&&expected&&row.event===expected&&v.unit_id&&row.unit_id===v.unit_id&&v.person_id===id&&text(v.reason)&&DeskRules.date(day)&&day<=today();
+      const confirmed=v.status==='requested'||text(v.accepted_by)&&text(v.evidence)&&row.unit_status===(v.status==='accepted'?'held':'available');
+      if(receipt&&confirmed)labels.set(row.interaction_id,{label:holdStatusLabels[v.status],text:'Status: '+holdStatusLabels[v.status]});
+      continue;
+    }
+    if(v?.kind!=='journey'||v.version!==1||!text(v.event_id)||typeof v.type!=='string'||!Object.prototype.hasOwnProperty.call(journeyActionLabels,v.type)||seenEvents.has(v.event_id))continue;
+    const state=DeskJourney.state(prefix,id,{today:today(),now:nowIso(),timeZone:tz()}),tour=state.tours.find(t=>t.tour_id===v.tour_id);
+    const accepted=v.type==='qualification'?!!state.qualification&&state.qualification.event_id===v.event_id:v.type==='handoff_offered'?!!state.handoff&&state.handoff.event_id===v.event_id:v.type==='handoff_accepted'?!!state.handoff&&state.handoff.accepted_event_id===v.event_id:v.type==='tour_preparation'?!!tour&&tour.preparation_event_id===v.event_id:v.type==='tour_recap'?!!tour?.recap&&tour.recap.event_id===v.event_id:!!tour&&tour.event_id===v.event_id;
+    if(accepted){seenEvents.add(v.event_id);const label=v.type==='qualification'?readinessLabels[state.qualification.outcome]||'Readiness':journeyActionLabels[v.type],prior=v.type.startsWith('tour_')?priorByTour.get(v.tour_id):'';labels.set(row.interaction_id,{label,text:prior&&prior!==label?`Status changed from ${prior} to ${label}`:'Status: '+label});if(v.type.startsWith('tour_'))priorByTour.set(v.tour_id,label);}
+  }
+  return labels;
+}
+function journeyTime(value) {
+  if(!value)return 'No time';
+  const offset=String(value).match(/(Z|[+-]\d{2}:\d{2})$/)?.[1];
+  return `${fmtDay(String(value).slice(0,10))}, ${fmtTime(String(value).slice(11,16))}${offset?' (UTC'+(offset==='Z'?'':offset)+')':''}`;
+}
+
+const journeyOf = id => DeskJourney.state(records('Interactions'),id,{today:today(),now:nowIso(),timeZone:tz(),tasks:D.T.Tasks?.rows});
+let partnerTemperature='all';
+function filteredPartners() {
+  return records('Partners').filter(partner=>partnerTemperature==='all'||(partner.lead_temperature||partner.temperature ? (partner.lead_temperature||partner.temperature)===partnerTemperature : Object.values(model().people).some(p=>p.referring_partner_id===partner.partner_id&&p.lead_temperature===partnerTemperature))).slice().sort((a,b)=>a.name.localeCompare(b.name));
+}
+function partnerList(){
+  return `<div class="btns">${['all','hot','warm','cold'].map(t=>`<button class="chip" data-act="partner-filter" data-temperature="${t}" aria-pressed="${partnerTemperature===t}">${cap(t)}</button>`).join('')}</div>${filteredPartners().map(p=>`<details><summary>${esc(displayText(p.name))}</summary>${Object.values(model().people).filter(b=>b.referring_partner_id===p.partner_id).map(b=>`<p><button class="link" data-act="buyer" data-person="${esc(b.person_id)}">${esc(displayText(b.name))}</button></p>`).join('')||'<p>No buyers.</p>'}</details>`).join('')||'<p>No partners.</p>'}`;
+}
+function questionText(r){
+ const person=questionPerson(r),name=person&&model().people[person]?.name;
+ return displayText(name?String(r.question||'').replace(/\bthis buyer\b/gi,()=>name):r.question);
+}
+function questionCard(r) {
+  return `<div class="row" role="listitem"><details><summary>${esc(questionText(r))}</summary><p>${esc(displayText(r.reason==='status confirmation'?'Sold or investor?':cap(r.reason)))}${r.owner?' / '+esc(displayText(r.owner)):''}</p>${questionPerson(r)?`<button class="link" data-act="buyer" data-person="${esc(questionPerson(r))}">${esc(displayText(personName(questionPerson(r))))}</button>`:''}</details></div>`;
+}
+function renderPriorityQuestions(){const q=openQuestions();$('today-questions').innerHTML=q.length?`<h2 class="section-title">Claude’s questions</h2><div class="list">${q.map(questionCard).join('')}</div>`:'';}
+function handleWorkflowClick(act,b){
+ switch(act){
+ case 'theme':{const theme=document.documentElement.dataset.theme,dark=theme==='dark'||!theme&&window.matchMedia?.('(prefers-color-scheme: dark)').matches;document.documentElement.dataset.theme=dark?'light':'dark';break;}
+ case 'buyer':openBuyer(b.dataset.person);break;
+ case 'villa':openVilla(b.dataset.unit);break;
+ case 'detail-close':detailRequest++;$('detail').close();break;
+ case 'saved-list':applySavedList(b.dataset.tab,b.dataset.preset);break;
+ case 'board':case 'list':buyerView.mode=act;$('p-body').dataset.sig='';renderPipeline();break;
+ case 'clear-filters':savedListPrevious.delete('pipeline');Object.assign(buyerView,{owner:'all',stage:'all',search:'',temperature:'all',sort:'current',preset:''});renderPipeline();break;
+ case 'stage-filter':buyerView.stage=b.dataset.stage;buyerView.mode='list';switchView('pipeline');break;
+ case 'unit-filter':tabViews.units.status=b.dataset.status||'all';renderUnits();break;
+ case 'nurture-filter':tabViews.marketing.nurture=b.dataset.status||'all';renderMarketing();break;
+ case 'partner-filter':partnerTemperature=b.dataset.temperature;$('partner-list').innerHTML=partnerList();break;
+ default:return false;
+ }return true;
+}
+const tabRenders={marketing:()=>renderMarketing(),units:()=>renderUnits(),changes:()=>renderChanges()};
+const tabControls={'m-temperature':['marketing','temperature'],'m-nurture':['marketing','nurture'],'u-status':['units','status'],'u-type':['units','type'],'c-buyer':['changes','buyer'],'c-team':['changes','team'],'c-kind':['changes','kind']};
+document.addEventListener('input',e=>{
+ if(e.target.id==='global-search')renderGlobalSearch(e.target.value);
+ const tab={'m-search':'marketing','u-search':'units','c-search':'changes'}[e.target.id];
+ if(tab){tabViews[tab].search=e.target.value;tabRenders[tab]();}
+});
+document.addEventListener('change',e=>{
+ const filter=tabControls[e.target.dataset?.tabFilter];if(filter){const [tab,key]=filter;tabViews[tab][key]=e.target.value;tabRenders[tab]();}
+ if(e.target.id==='home-role'){homeRole=e.target.value;homeSelected=true;S.open=null;$('detail').close();renderAll();}
+ const key={'buyer-sort':'sort','buyer-temperature':'temperature','buyer-owner':'owner','buyer-stage':'stage'}[e.target.id];
+ if(key){buyerView[key]=e.target.value;renderPipeline();}
+});
+
+const personName = id => model().people[id]?.name || 'No buyer';
+
+// Remember disclosure choices when a search changes a person's visible entries.
+document.addEventListener('toggle',e=>{const key=e.target.dataset?.activityGroup;if(key)activityDisclosure.set(key,e.target.open);},true);
+
+// END WORKFLOW UI
+async function loadIdentity(host) {
+  try {
+    const user = await host.use('user'), identity = user ? await user.me() : null;
+    authenticatedEmail = typeof identity?.email === 'string' ? identity.email.trim().toLowerCase() : '';
+    viewerName = typeof identity?.name === 'string' ? identity.name.trim() : '';
+  } catch { authenticatedEmail = ''; viewerName = ''; }
+  if (D) renderAll(); else renderHeader();
+}
+
+(async () => {
+  renderHeader();
+  scheduleAgeTick();
+  if (/^__/.test(CONFIG.sheetId)) return renderStop("Unavailable", "");
+  const host = window.claude;
+  if (!host || typeof host.use !== "function") return renderStop("Unavailable", "");
+  const hv = /^#(today|pipeline|noowner|questions|units|changes|marketing)$/.exec(location.hash || ""); if (hv) view = hv[1];
+  // The last view this browser saw, at once, then the sheet.
+  const c = readCache();
+  if (c) { try { D = build(c.raw); cachedLikelihoodViews.add(D); S.fresh = { state: "cached", at: cachedViewTime(c,view), err: null }; renderAll(); reportTiming("cache-paint", pageStartedAt, view); } catch (e) { D = null; } }
+
+  loadIdentity(host);
+  try { mcp = await host.use("mcp"); } catch (e) { mcp = null; }
+  if (!mcp) { if (D) { S.fresh = { state: "error", at: S.fresh.at, err: null }; renderAll(); toast("Offline. Showing last load."); return; }
+    return renderStop("Unavailable", ""); }
+  start(true);
+})();
+</script>
