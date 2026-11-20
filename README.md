@@ -11,4 +11,4 @@ The Sales desk plugin for Claude, used by the OCN sales team.
 
 The quick start guide covers the rest of setup.
 
-Current version: 1.0.1
+Current version: 1.0.2
