@@ -11,7 +11,7 @@
       "name": "sales-desk",
       "source": "./plugin/sales-desk",
       "description": "Keeps the condo sales desk's records in a Google Sheet: logging, review, tasks, reports, and a setup wizard.",
-      "version": "1.0.2"
+      "version": "1.0.3"
     }
   ]
 }

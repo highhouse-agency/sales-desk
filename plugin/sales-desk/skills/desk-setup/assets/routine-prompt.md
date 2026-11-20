@@ -98,7 +98,7 @@ For the scheduled morning summary email, resolve the recipient's own verified li
 7. If the settings say Meta delivery fields are verified, keep the campaign-week impressions, link clicks, and reach for the report snapshot. Do not write them to the sheet.
 
 ## 6. Publish
-1. Run the `desk-report` skill for all eight standing pages every morning, regardless of `weekly_report_day`: `index.html`, `demand-and-ads.html`, `partner-network.html`, `unit-interest.html`, `owner-brief.html`, `source-to-sale.html`, `closed-lost.html`, and `buyer-segments.html`. Publish the complete set in ONE publish. For the cloud report artifact, use `index.html` as the page and the other seven pages via files, as `routines/morning-run-cloud.md` specifies. Owner brief is refreshed daily.
+1. Run the `desk-report` skill for all five standing pages every morning, regardless of `weekly_report_day`: `index.html`, `demand-and-ads.html`, `partner-network.html`, `unit-interest.html`, `owner-brief.html`, and. Publish the complete set in ONE publish. For the cloud report artifact, use `index.html` as the page and the other seven pages via files, as `routines/morning-run-cloud.md` specifies. Owner brief is refreshed daily.
 2. A failed Meta refresh does not stop the report. The campaign section keeps its own covered-through date.
 3. Read back the published report and verify both `run_id` and `as_of` match this build before claiming publication. Follow desk-report for site verification and the cloud header for artifact verification.
 4. If the report fails at any step, the previous page and its date stay up. Do not retry more than once.

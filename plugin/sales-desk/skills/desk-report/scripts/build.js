@@ -26,7 +26,8 @@ import { cardSvg } from './lib/card.js';
 import { seedSnapshot } from './adapters/seed.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const STANDING = ['sales-pulse', 'demand-and-ads', 'partner-network', 'unit-interest', 'owner-brief', 'source-to-sale', 'closed-lost', 'buyer-segments'];
+const STANDING = ['sales-pulse', 'demand-and-ads', 'partner-network', 'unit-interest', 'owner-brief'];
+// Source to sale, Closed Lost Insights and Buyer Segment Insights are drafts (Andie, Nov 19): off the standing set until their data is recorded.
 
 export class BuildError extends Error {}
 
