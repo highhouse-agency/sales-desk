@@ -1,8 +1,8 @@
 {
   "name": "sales-desk",
   "displayName": "Sales desk",
-  "version": "1.0.3",
-  "description": "Keeps the condo sales desk's records in a Google Sheet. Log voice notes, transcripts, emails, and screenshots as confirmed rows; clear the Review tab; build reports; and set the desk up by saying \"set up the sales desk.\"",
+  "version": "1.0.4",
+  "description": "Keeps the OCN sales desk's records in a Google Sheet. Tell it about buyers in voice notes, screenshots, emails or a few typed words; it saves confirmed rows, keeps tasks on the team calendar, and builds reports.",
   "author": {
     "name": "Sales desk kit"
   }

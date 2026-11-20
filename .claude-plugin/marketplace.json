@@ -4,14 +4,14 @@
     "name": "Andie Wilber"
   },
   "metadata": {
-    "description": "Marketplace for the OCN sales desk plugin. Add this repo in Customize, Plugins, Add marketplace, and turn on Sync automatically."
+    "description": "Marketplace for the OCN sales desk plugin. In the Claude app, open Plugins, then Add, Add marketplace, Add from a repository. Enter highhouse-agency/sales-desk and leave Sync automatically on."
   },
   "plugins": [
     {
       "name": "sales-desk",
       "source": "./plugin/sales-desk",
-      "description": "Keeps the condo sales desk's records in a Google Sheet: logging, review, tasks, reports, and a setup wizard.",
-      "version": "1.0.3"
+      "description": "Keeps the OCN sales desk's records in a Google Sheet: logging, review, tasks and reports.",
+      "version": "1.0.4"
     }
   ]
 }
