@@ -5,7 +5,7 @@ description: Turn sales desk input into confirmed saves. Use for voice notes, tr
 
 # desk-log
 
-Rules version: 2026-11-19. If `desk` shows a different version, say so and make no writes.
+Rules version: 2026-11-20. If `desk` shows a different version, say so and make no writes.
 
 Follow `desk` first for sheet discovery, Settings, Properties, Schema, operator authority and conversation caching. Propose, confirm, append history, update current facts, read back, then report. Never claim success before verification.
 

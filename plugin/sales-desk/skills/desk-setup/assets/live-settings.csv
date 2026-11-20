@@ -7,4 +7,5 @@ desk_owner,Alix
 sales_lead,Freddie
 shared_inbox,andie@highhouseagency.com
 task_owners,Alix | <ask Google email> | <ask color>; Freddie | <ask Google email> | <ask color>; Jackson | <ask Google email> | <ask color>
-dashboard_links,
+dashboard_link,
+report_artifact,

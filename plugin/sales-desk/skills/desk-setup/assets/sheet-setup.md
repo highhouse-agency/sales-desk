@@ -241,11 +241,10 @@ Two columns, one row per setting. These rows replace the old project-instruction
 | `partner_quiet_days` | Whole days | `30` |
 | `snapshot_stale_hours` | Report stale after this many hours | `36` |
 | `tracking_started_at` | ISO timestamp with offset | `2026-08-24T00:00:00-06:00` |
-| `report_site` | The report site URL. Blank until the report site is set up with the setup kit. | blank |
-| `publishing_route` | `GitHub`, `Netlify`, or `Mac` (the setup kit deploys from a Mac; the cloud morning run cannot publish). Blank until the report site is set up. | blank |
+| `report_artifact` | Link to the team's private report page in Claude. Blank until the desk owner publishes it. | blank |
 | `task_owners` | Everyone who can own a buyer or a task, separated by `;`. Each entry is `Name \| Google email \| calendar color`. The color is a Google Calendar event color name: Tomato, Flamingo, Tangerine, Banana, Sage, Basil, Peacock, Blueberry, Lavender, Grape, or Graphite. Task owners do not have to be operators. | `Carmen \| carmen@patio-niebla.example \| Basil; Bea \| bea@patio-niebla.example \| Peacock; Rodrigo \| rodrigo@patio-niebla.example \| Grape; Elena Mercado \| elena@patio-niebla.example \| Banana` |
 | `task_calendar` | The calendar ID of the shared task calendar (for example `OCN Sales`), from Google Calendar's settings for that calendar. Blank means tasks stay in the sheet and no events are made. | blank |
-| `dashboard_links` | One or more named dashboards: `Name \| link;Name \| link`. Include every configured desk. | blank |
+| `dashboard_link` | Link to the team's live dashboard in Claude. Blank until the desk owner publishes it. | blank |
 | `meta_delivery_fields_verified` | `no` or `yes` | `no` |
 | `setup_status` | Written by `desk-setup`: the last completed setup step and when | set by `desk-setup` |
 

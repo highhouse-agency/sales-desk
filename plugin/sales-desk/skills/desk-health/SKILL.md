@@ -5,7 +5,7 @@ description: Check sales desk connections when asked to check the desk or at the
 
 # desk-health
 
-Rules version: 2026-11-19. If desk differs, say so.
+Rules version: 2026-11-20. If desk differs, say so.
 
 Follow desk first, including exact pinned-sheet/calendar restrictions and inaccessible-sheet stop message. Read only; never write, send email or change events/settings. Use operator's language.
 

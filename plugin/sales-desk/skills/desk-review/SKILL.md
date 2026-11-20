@@ -5,7 +5,7 @@ description: Clear the sales desk Review tab in conversation, one item at a time
 
 # desk-review
 
-Rules version: 2026-11-19. If the `desk` skill shows a different version, say so and make no writes.
+Rules version: 2026-11-20. If the `desk` skill shows a different version, say so and make no writes.
 
 Follow desk for access/identity/columns/Save/Undo; desk-log for matching, fields/events, add-only writes, keys and read-back. This skill owns Review resolution. Repair choices below are desk-owner-only.
 

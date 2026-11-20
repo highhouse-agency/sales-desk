@@ -5,18 +5,18 @@ description: Set up or resume the training/live sales desk, repair missing setup
 
 # desk-setup
 
-Rules version: 2026-11-19. A mismatch with desk stops writes.
+Rules version: 2026-11-20. A mismatch with desk stops writes.
 
 Follow desk first, especially the pinned-sheet boundary. Pinned access permits only that sheet/calendar and Settings drive_folder for original-source retention. Never search Drive or access other files/folders/calendars. The pinned calendar wins; discrepancies are owner-only data repairs. Inaccessibility uses desk's exact stop message. Setup/training title searches are allowed only without a pinned link.
 
-Resume existing work, never duplicate sheets/folders/clean copies/morning tasks. Failed/incomplete searches are not absence. Never delete/reorder existing tabs/columns or overwrite filled cells. Preview differences; owner edits filled settings manually, then read back (`setup_status` excepted). Only desk owner changes shared setup. Others receive seat/dashboard checks only, with desk-tasks' own-link exception.
+Resume existing work, never duplicate sheets/folders/clean copies/morning tasks. Failed/incomplete searches are not absence. Never delete/reorder existing tabs/columns or overwrite filled cells. Preview differences; owner edits filled settings manually, then read back (`setup_status` excepted). Only desk owner changes shared setup. Others receive seat/dashboard checks only.
 
 Use `${CLAUDE_SKILL_DIR}/assets/`: `sheet-setup.md` for layout/validation/formulas/protection, `schema.csv`, `seed/*.csv`, training/live settings and properties, inventory worksheet, `routine-prompt.md`; use `scripts/formulas.mjs` for resolved layouts. After each owner step record `setup_status=<step> done <now>` only on passed checks, otherwise pending with missing item.
 
 ## 1. Connectors
-Load tools on demand before declaring a connector missing. Try one harmless read of the permitted resource. Sheet and Drive are required for creating a desk; pinned seats check only that sheet and configured source-retention folder. Calendar is optional (tasks remain in sheet), Gmail optional (inbox/delivery pending), Meta optional (CSV fallback). GitHub is optional publishing infrastructure, never part of desk-health's connection list.
+Load tools on demand before declaring a connector missing. Try one harmless read of the permitted resource. Sheet and Drive are required for creating a desk; pinned seats check only that sheet and configured source-retention folder. Calendar is optional (tasks remain in sheet), Gmail optional (inbox/delivery pending), Meta optional (CSV fallback). Reports and dashboard use private Claude artifacts.
 
-For missing Google services, direct the account owner to Claude connector settings, then wait. Verify their intended account/roster independently of keyboard identity; never borrow the resource owner's sign-in. Missing organization access goes to Claude Team owner; tools still absent after connection require a new chat and resume. Meta connects under Plugins, Sales desk, Connectors. GitHub is not bundled: only the desk owner adds it, as a custom connector, for report publishing. Meta uses View performance; block all change tools. People alone sign in, create accounts and approve permissions.
+For missing Google services, direct the account owner to Claude connector settings, then wait. Verify their intended account/roster independently of keyboard identity; never borrow the resource owner's sign-in. Missing organization access goes to Claude Team owner; tools still absent after connection require a new chat and resume. Meta connects under Plugins, Sales desk, Connectors. Meta uses View performance; block all change tools. People alone sign in, create accounts and approve permissions.
 
 ## 2. Who, and what exists
 1. Establish desk owner before shared writes; when configured ask "Setting up as <desk_owner>?"
@@ -72,17 +72,17 @@ Owner runs once to allow required tools for all tasks, leaving Meta change tools
 ## 7a. Task calendar and dashboard
 Optional; training skips unless requested. Read pinned calendar directly, otherwise configured calendar. Without pin/calendar, owner may provide existing ID or create/share a calendar in Google Calendar settings with task owners allowed changes; never create/share without yes. Fill blank task_calendar, verify. Each person accepts invitation, checks calendar and phone notifications. Compare their display zone against an approved practice appointment; local display difference alone is not a wrong instant. Owner guests receive reminders.
 
-Use desk-tasks' view-only dashboard; verify real own-account publication/read access. No page writes or Sheet/Calendar write permissions. Each person says Open my dashboard in their own chat/connectors. An operator/task owner saves own entry; desk owner may save an entry for any task owner. Preview, one yes, re-read/merge/read-back preserve other Settings. Reject literal `|` or `;` in links; NFC and case-folding match canonical names. Legacy dashboard_link is owner fallback only.
+Follow desk-tasks for the one private team dashboard. Only the desk owner provides an existing private dashboard URL or first publishes, then saves `dashboard_link` under desk-tasks. Viewers use that URL and their own Google connector, read access only. Verify private view-only access; owner uses Share. Existing URLs update in place; failures need repair.
 
 ## 8. Reports
-Site infrastructure is set up from kit on owner's Mac, never here. Fill blank report_site/publishing_route only from owner-supplied URL and GitHub/Mac choice, then verify. Preserve existing values. Without site, build files locally; GitHub stays optional on Mac route. No Cloudflare/Netlify/GitHub provisioning here.
+Follow desk-report for one private multi-file report artifact. Only the desk owner provides an existing private report URL or first publishes, then saves `report_artifact` under desk-report. Read/verify each provided URL opens the right page; preview Save / Change / Cancel and read back Settings. Existing URLs update in place; failures need repair. Morning never creates; blank skips publication. Preserve existing values. Verify sharing/access.
 
 ## 9. Check and finish
-1. Read exact sheet/Settings/open Review. Ensure personal project lines above. Nonoperator authenticated task owners checking only own dashboard skip the general logging test in steps 2 to 4; no general logging permission. Own-link setup follows 7a.
+1. Read exact sheet/Settings/open Review. Ensure personal project lines above. Nonoperator authenticated task owners checking only own dashboard skip the general logging test in steps 2 to 4; no general logging permission. Shared dashboard setup follows 7a.
 2. Operator previews then appends desk-log test: decision/note/chat note, no buyer/partner, summary Setup test row; not a real event., unique source_key `setup:test:<now YYYY-MM-DDTHH:MM:SS>:e1`, actual logged_by.
 3. Read by source key; verify unique ID and untouched notes/formulas.
 4. Append/read correction linked to test, same channel, source key same time `:e2`, summary Withdraws the setup test row; it records no event.
-5. Final checklist: choose **Sonnet** in the model picker for daily use. Reports/review may use Opus; connected model acceptance remains required. Say ready only after required connectors, all layout/read-back checks, seed/formulas (unless approved custom training), test/correction, and owner's live morning task pass. Otherwise list pending item/person/next step. List optional GitHub, Meta, protection/site separately. Record 9 done/pending. New chat: paste update or go through Review.
+5. Final checklist: choose **Sonnet** in the model picker for daily use. Reports/review may use Opus; connected model acceptance remains required. Say ready only after required connectors, all layout/read-back checks, seed/formulas (unless approved custom training), test/correction, and owner's live morning task pass. Otherwise list pending item/person/next step. List optional Meta, protection and artifact access separately. Record 9 done/pending. New chat: paste update or go through Review.
 
 ## 10. Rebuild the formulas
 Owner only, after upgrades. Read Schema and headers for Interactions/Pipeline/Partners/Units/Properties and save first five Pipeline/Partners current touch values. Generate from work/layout.json per formulas.mjs contract. Problems stop for owner resolution. Preview three target cells/changes; after yes clear only named formula output ranges and write row-1 formulas. Fix generator-listed dropdown/protection ranges; verify headers and unchanged saved values. Changed values mean `10 pending: formula values changed`. Without Node manually substitute current positions per script: CHOOSECOLS indices, last Interactions column, person/partner ID ranges, last_touch column and Schema header; preview before writing.

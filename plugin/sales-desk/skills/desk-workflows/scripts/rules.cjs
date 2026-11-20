@@ -124,18 +124,12 @@ const DeskRules = (() => {
     }
     return out;
   }
-  function dashboardLink(settings={},person='') {
-    const normalized=value=>String(value||'').normalize('NFC').trim().toLowerCase();
-    const name=typeof person==='string'?normalized(person):'';
-    if(!name)return '';
-    const safe=value=>{if(typeof value!=='string'||/[;|]/.test(value))return '';try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&u.hostname?value:'';}catch{return '';}};
-    const parts=String(settings.dashboard_links||'').split(';').map(entry=>entry.split('|').map(v=>v.trim()));
-    const own=parts.map((entry,index)=>({entry,index})).filter(({entry})=>normalized(entry[0])===name);
-    const entries=own.map(({entry,index})=>parts[index+1]?.length===1&&parts[index+1][0]?[]:entry);
-    // Conflicting duplicate mappings require correction, never a guessed link.
-    if(entries.length)return entries.length===1&&entries[0].length===2?safe(entries[0][1]):'';
-    return name===normalized(settings.desk_owner)?safe(String(settings.dashboard_link||'').trim()):'';
+  function safeLink(value) {
+    value=String(value||'').trim();
+    if(!value||/[;|]/.test(value))return '';
+    try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)&&u.hostname?value:'';}catch{return '';}
   }
+  function dashboardLink(settings={}) { return safeLink(settings.dashboard_link); }
   function villa(v, {unit, reporter, owners=[], now}={}) {
     requireValue(['requested','accepted','release'].includes(v.status), 'Choose request, acceptance or release.');
     requireValue(v.person_id && v.unit_id && v.reason?.trim(), 'Name the buyer, villa and reason.');
@@ -252,6 +246,6 @@ const DeskRules = (() => {
     if (s.opted_out) s.status='opted out';
     return s;
   }
-  return {stages, tracks, date, businessDate, buyer, overrideAttribution, likelihoodOverride, setOverride, advanceOverrides, interactionColumnIssues, unitStatus, unitSoldToBuyer, unitAreas, inventoryReviewProposals, dashboardLink, villa, effective, workflows, booked, alert, enrollment, nurture};
+  return {stages, tracks, date, businessDate, buyer, overrideAttribution, likelihoodOverride, setOverride, advanceOverrides, interactionColumnIssues, unitStatus, unitSoldToBuyer, unitAreas, inventoryReviewProposals, safeLink, dashboardLink, villa, effective, workflows, booked, alert, enrollment, nurture};
 })();
 if (typeof module !== 'undefined') module.exports = DeskRules;

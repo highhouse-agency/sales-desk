@@ -1,6 +1,6 @@
 # Sales desk morning run
 
-Rules version: 2026-11-19
+Rules version: 2026-11-20
 
 Desk sheet: <title and link, filled in by desk-setup>
 
@@ -26,7 +26,7 @@ Use a project-pinned calendar in preference to Settings `task_calendar`; disagre
 1. Run the `desk-health` check and keep its result for the summary's Connections line. If it says the desk sheet is unreachable, stop: publish nothing and report it.
 2. Confirm the rules version in the `desk` skill and in each skill matches this prompt. If not, stop and report it in the summary.
 3. Open the desk sheet named above (never ask which one) and read its Settings, Properties, and Schema tabs. Read and write every field by its key, through Schema, as the `desk` skill's "Columns" section says. Interactions `lost_reason` is optional until the 0.9.0 upgrade: if its Schema row or column is missing, omit it from the report snapshot, group missing reasons as Not recorded, skip writes to that field, and note the pending upgrade. Do not add columns during this run. For any other key you need that does not line up with a column, write nothing to that tab and route the misalignment to the desk owner as data repair.
-4. Check you can read and append to the sheet and reach the publishing connector. Check the shared inbox only when Gmail is configured; if unavailable, skip that source and email delivery, and keep pending notices visible. If the sheet is unreachable, stop: publish nothing and report the failure. If only publishing or Meta is unreachable, keep going and report it. A blank `report_site` setting means the report site is not set up yet: skip publishing and say so in the summary. With `publishing_route` set to `Mac`, the site deploys from the desk owner's Mac: build the pages as files, skip publishing, and say so in the summary.
+4. Check you can read and append to the sheet and reach the publishing connector. Check the shared inbox only when Gmail is configured; if unavailable, skip that source and email delivery, and keep pending notices visible. If the sheet is unreachable, stop: publish nothing and report the failure. If only publishing or Meta is unreachable, keep going and report it. Read Settings `report_artifact`; blank means build nothing for publication, skip publishing and report owner setup needed. Otherwise read/update that same private artifact; failure is owner-only data repair, never a replacement. Morning never creates artifacts.
 
 ## 2. Collect sources
 Decide what needs work by source key, never by read or unread state or by the last run date.
@@ -84,9 +84,9 @@ This is morning-run source text, not evidence of a separate evening reminder. A 
 
 For every confirmed new People row, show Freddie a morning-list line until an effective logged outbound outreach or real conversation for that buyer occurs after first contact. Incoming inquiry, an alert email, a scheduled appointment, a sent receipt without verified outreach, or marking a task done alone does not clear the line. Existing unresolved notices remain visible across runs. Never create an unreviewed buyer merely to send an alert.
 
-Only in verified live mode, when Gmail is available, send one internal new-lead email to Freddie's verified address from `task_owners`, from the verified morning account `andie@highhouseagency.com`. Include only a short new-lead notice and Freddie's own verified `dashboard_links` entry. Never substitute another person's link. A missing own link is omitted; say once "Ask Claude to open your dashboard." Legacy `dashboard_link` is a fallback only when the recipient is `desk_owner`. Training and preview runs only list these notices and never send them. Key duplicate checks by the saved People `lead_id`; check sent mail before sending and retain a durable per-lead delivery receipt in add-only Interactions history (`event=note`, `source_key=new-lead-alert:<lead_id>:e1`). If a provider result is uncertain, reconcile sent mail before retrying, never send blindly. A missing address, sender mismatch, unavailable Gmail or uncertain delivery leaves the alert pending and the morning line visible. Do not guess Freddie's email. This exception sends only to Freddie, never to a buyer or partner.
+Only in verified live mode, when Gmail is available, send one internal new-lead email to Freddie's verified address from `task_owners`, from the verified morning account `andie@highhouseagency.com`. Include only a short new-lead notice and the verified team `dashboard_link`. A missing link is omitted; say once "Ask Claude to open your dashboard." Training and preview runs only list these notices and never send them. Key duplicate checks by the saved People `lead_id`; check sent mail before sending and retain a durable per-lead delivery receipt in add-only Interactions history (`event=note`, `source_key=new-lead-alert:<lead_id>:e1`). If a provider result is uncertain, reconcile sent mail before retrying, never send blindly. A missing address, sender mismatch, unavailable Gmail or uncertain delivery leaves the alert pending and the morning line visible. Do not guess Freddie's email. This exception sends only to Freddie, never to a buyer or partner.
 
-For the scheduled morning summary email, resolve the recipient's own verified link from Settings `dashboard_links` (`Name | link; Name | link`). Legacy `dashboard_link` is a fallback only when the recipient is `desk_owner`. The body contains only that recipient's verified dashboard link. Keep the eight canned report pages and their daily refresh unchanged. If that link is missing or publication cannot be verified, leave the morning email pending, omit the link from their morning list and say once "Ask Claude to open your dashboard." Never publish another person's dashboard from this unattended seat. Do not replace it with a report narrative or unverified link. Cloud preview and practice gates in `routines/morning-run-cloud.md` still apply; updating this template does not update the cloud task's saved copy.
+For the scheduled morning summary email, use the verified team link from Settings `dashboard_link`. The body contains only that dashboard link. Keep the five standing report pages and their daily refresh. If the link is missing or publication cannot be verified, leave email pending, omit the link from the morning list and say once "Ask Claude to open your dashboard." Never create or republish the dashboard from this unattended seat. Do not replace it with a report narrative or unverified link. Cloud preview and practice gates in `routines/morning-run-cloud.md` still apply; updating this template does not update the cloud task's saved copy.
 
 ## 5. Refresh Campaigns from Meta
 1. Work out the current week and the previous week from the week-start setting.
@@ -98,10 +98,10 @@ For the scheduled morning summary email, resolve the recipient's own verified li
 7. If the settings say Meta delivery fields are verified, keep the campaign-week impressions, link clicks, and reach for the report snapshot. Do not write them to the sheet.
 
 ## 6. Publish
-1. Run the `desk-report` skill for all five standing pages every morning, regardless of `weekly_report_day`: `index.html`, `demand-and-ads.html`, `partner-network.html`, `unit-interest.html`, `owner-brief.html`, and. Publish the complete set in ONE publish. For the cloud report artifact, use `index.html` as the page and the other seven pages via files, as `routines/morning-run-cloud.md` specifies. Owner brief is refreshed daily.
+1. If Settings `report_artifact` is blank, build nothing for publication; skip and report owner setup needed. Otherwise run desk-report for all five standing pages every morning regardless of weekly_report_day, with status.json, in ONE update of that same private multi-file artifact. Never create an artifact or replace its URL. Preserve existing briefs/custom pages. Owner brief refreshes daily.
 2. A failed Meta refresh does not stop the report. The campaign section keeps its own covered-through date.
-3. Read back the published report and verify both `run_id` and `as_of` match this build before claiming publication. Follow desk-report for site verification and the cloud header for artifact verification.
-4. If the report fails at any step, the previous page and its date stay up. Do not retry more than once.
+3. Read status.json from that same artifact and require matching run_id/as_of, plus all requested files, before verified publication or any allowed Drive baseline save. Otherwise report "Published but unverified" and retain the old baseline. Read/update failure is owner-only data repair.
+4. Prepublish failure leaves the previous page/date up. Reconcile uncertain publication by reading the same artifact, never retry blindly or recreate.
 
 ## 7. Summary
 End with this summary as the task result, and nothing after it. Use verified counts and plain names from this run; write "none" for empty lines. Keep record and source IDs in the sheet, not in this summary. Any actions for the team are a numbered list, overdue first (oldest first), then due today, then work that must start early. Name a previous report only when its publication was verified.
@@ -123,9 +123,9 @@ Decisions first: <hold reviews, expired villa holds, nurture handoffs or cancell
 Follow-up alerts: <verified sent / eligible but pending / failed or uncertain, by buyer and owner>
 Needs an owner: <buyer names, or none>
 Needs a task: <active buyers with neither an open task nor a confirmed no-action exception, and next steps from today's sources waiting for an owner, or none>
-Dashboard: <recipient's own verified dashboard_links entry, desk-owner-only legacy fallback, or Ask Claude to open your dashboard>
+Dashboard: <verified team dashboard_link or Ask Claude to open your dashboard>
 Email: <sent to Andie (practice) / already sent today / not sent (<reason>)>
-Report: <published pages, as of time / committed, deployment pending / built as files; publishing not configured: <files> / not published, previous report from <date> stays up / not published; no previous report>
+Report: <published and verified, as of time / published but unverified / skipped; owner setup needed / not published, previous report from <date> stays up / not published; no previous report>
 Failed: <each failure and what the desk owner should do, or none>
 Open Review items: <n sales questions, excluding data repairs>
 ```

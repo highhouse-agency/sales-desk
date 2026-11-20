@@ -69,11 +69,13 @@ test('all training seed copies preserve the same override and budget examples', 
 });
 
 
-test('new settings support named dashboards and unit area schema stays compatible', () => {
+test('new settings support private artifacts and unit area schema stays compatible', () => {
   for (const name of ['live-settings.csv','training-settings.csv']) {
     const settings = Object.fromEntries(csv(read('assets/' + name)).map(r=>[r.setting,r.value]));
-    assert.ok(Object.hasOwn(settings,'dashboard_links'));
-    assert.ok(!Object.hasOwn(settings,'dashboard_link'));
+    assert.ok(Object.hasOwn(settings,'report_artifact'));
+    assert.equal(settings.report_artifact,'');
+    assert.ok(Object.hasOwn(settings,'dashboard_link'));
+    assert.equal(settings.dashboard_link,'');
   }
   const keys = csv(read('assets/schema.csv')).filter(r=>r.tab==='Units').map(r=>r.key);
   for (const key of ['size','size_unit','square_footage','size_m2','size_ft2']) assert.ok(keys.includes(key));

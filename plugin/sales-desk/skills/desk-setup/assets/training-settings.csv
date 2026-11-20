@@ -18,10 +18,9 @@ partner_active_days,14
 partner_quiet_days,30
 snapshot_stale_hours,36
 tracking_started_at,2026-08-24T00:00:00-06:00
-report_site,
-publishing_route,
+report_artifact,
 task_owners,Carmen | carmen@patio-niebla.example | Basil; Bea | bea@patio-niebla.example | Peacock; Rodrigo | rodrigo@patio-niebla.example | Grape; Elena Mercado | elena@patio-niebla.example | Banana; Jorge | jorge@patio-niebla.example | Graphite
 task_calendar,
-dashboard_links,
+dashboard_link,
 meta_delivery_fields_verified,no
 setup_status,
