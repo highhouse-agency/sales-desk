@@ -1,6 +1,8 @@
 # Sales desk morning run
 
-Rules version: 2026-11-20
+Rules version: 2026-11-21
+
+For live setup, use the bundled `morning-run-live.md` beside this file with the verified pinned live sheet (canonical repo copy: `routines/morning-run-live.md`). Its live header controls page publication, delivery and dry runs.
 
 Desk sheet: <title and link, filled in by desk-setup>
 
@@ -12,7 +14,7 @@ Write every row with `logged_by=scheduled job`. Write every timestamp with the r
 Every operator-facing Review question or action names the buyer (or partner/villa when applicable) and the missing/conflicting sales fact. Use sales words, never history rows, tabs, Schema, IDs, formulas or receipts; Review questions explicitly ban row and column. Misalignment, missing receipts, broken formulas and duplicate rows go to Review with `reason=data repair`, assigned to Settings `desk_owner`. Reuse existing open repairs and report them only to that owner in a separate repair report. Never include repairs in operator Today, morning lists, dashboard questions, Tasks, team actions or operator Review counts. Do not create a task for a data repair. This rule also covers legacy repair items stored under other reasons.
 
 ## Never, in this run
-- Never send, reply to, or draft buyer/partner messages from this routine. The outbound exceptions are the internal new-lead email to Freddie under section 4b, the configured internal follow-up alert to Alix after desk-workflows activation checks pass, and the Monday practice email to Andie only under the conditions in `routines/morning-run-cloud.md`. That cloud header blocks Alix sends and requires verified report publication and a sent-mail duplicate check before the practice email; preview mode never sends. Provider nurture delivery remains with its approved provider, not improvised by this routine.
+- Never send, reply to, or draft buyer/partner messages from this routine. The outbound exceptions are the internal new-lead email to Freddie under section 4b, the configured internal follow-up alert to Alix after desk-workflows activation checks pass, and the scheduled internal summary under the live header's verified-recipient and duplicate-check rules. Preview mode never sends. Provider nurture delivery remains with its approved provider, not improvised by this routine.
 - Never call a Meta write tool. You only read spend and results.
 - Never approve a hold yourself, settle a referral dispute, change commission terms, or create a buyer on a guess.
 - Never edit or delete an earlier Interactions row, a manual column, or a formula column.
@@ -86,7 +88,7 @@ For every confirmed new People row, show Freddie a morning-list line until an ef
 
 Only in verified live mode, when Gmail is available, send one internal new-lead email to Freddie's verified address from `task_owners`, from the verified morning account `andie@highhouseagency.com`. Include only a short new-lead notice and the verified team `dashboard_link`. A missing link is omitted; say once "Ask Claude to open your dashboard." Training and preview runs only list these notices and never send them. Key duplicate checks by the saved People `lead_id`; check sent mail before sending and retain a durable per-lead delivery receipt in add-only Interactions history (`event=note`, `source_key=new-lead-alert:<lead_id>:e1`). If a provider result is uncertain, reconcile sent mail before retrying, never send blindly. A missing address, sender mismatch, unavailable Gmail or uncertain delivery leaves the alert pending and the morning line visible. Do not guess Freddie's email. This exception sends only to Freddie, never to a buyer or partner.
 
-For the scheduled morning summary email, use the verified team link from Settings `dashboard_link`. The body contains only that dashboard link. Keep the five standing report pages and their daily refresh. If the link is missing or publication cannot be verified, leave email pending, omit the link from the morning list and say once "Ask Claude to open your dashboard." Never create or republish the dashboard from this unattended seat. Do not replace it with a report narrative or unverified link. Cloud preview and practice gates in `routines/morning-run-cloud.md` still apply; updating this template does not update the cloud task's saved copy.
+For the scheduled morning summary email, use the verified team link from Settings `dashboard_link`. The body contains only that dashboard link. Keep the five standing report pages and their daily refresh. If the link is missing or publication cannot be verified, leave email pending, omit the link from the morning list and say once "Ask Claude to open your dashboard." Never create the dashboard from this unattended seat; update only its saved data as described below. Do not replace it with a report narrative or unverified link. The live header in `routines/morning-run-live.md` controls live delivery and dry runs; updating this template does not update the cloud task's saved copy.
 
 ## 5. Refresh Campaigns from Meta
 1. Work out the current week and the previous week from the week-start setting.
@@ -98,9 +100,9 @@ For the scheduled morning summary email, use the verified team link from Setting
 7. If the settings say Meta delivery fields are verified, keep the campaign-week impressions, link clicks, and reach for the report snapshot. Do not write them to the sheet.
 
 ## 6. Publish
-1. If Settings `report_artifact` is blank, build nothing for publication; skip and report owner setup needed. Otherwise run desk-report for all five standing pages every morning regardless of weekly_report_day, with status.json, in ONE update of that same private multi-file artifact. Never create an artifact or replace its URL. Preserve existing briefs/custom pages. Owner brief refreshes daily.
+1. If Settings `report_artifact` is blank, build nothing for publication; skip and report owner setup needed. Otherwise run desk-report for all five standing pages every morning regardless of weekly_report_day, with status.json and source.json, in ONE update of that same private multi-file artifact. Never create an artifact or replace its URL. Preserve existing briefs/custom pages. Owner brief refreshes daily.
 2. A failed Meta refresh does not stop the report. The campaign section keeps its own covered-through date.
-3. Read status.json from that same artifact and require matching run_id/as_of, plus all requested files, before verified publication or any allowed Drive baseline save. Otherwise report "Published but unverified" and retain the old baseline. Read/update failure is owner-only data repair.
+3. Read status.json and source.json from that same artifact and require matching run_id/as_of, plus all requested files, and require source.json mode/sheet_id match this run before verified publication or any allowed Drive baseline save. Otherwise report "Published but unverified" and retain the old baseline. Read/update failure is owner-only data repair.
 4. Prepublish failure leaves the previous page/date up. Reconcile uncertain publication by reading the same artifact, never retry blindly or recreate.
 
 ## 7. Summary
@@ -124,8 +126,16 @@ Follow-up alerts: <verified sent / eligible but pending / failed or uncertain, b
 Needs an owner: <buyer names, or none>
 Needs a task: <active buyers with neither an open task nor a confirmed no-action exception, and next steps from today's sources waiting for an owner, or none>
 Dashboard: <verified team dashboard_link or Ask Claude to open your dashboard>
-Email: <sent to Andie (practice) / already sent today / not sent (<reason>)>
+Email: <sent / already sent today / not sent (<reason>)>
 Report: <published and verified, as of time / published but unverified / skipped; owner setup needed / not published, previous report from <date> stays up / not published; no previous report>
 Failed: <each failure and what the desk owner should do, or none>
 Open Review items: <n sales questions, excluding data repairs>
 ```
+
+### Refresh the saved dashboard
+
+After this run's full-tab reads complete, reuse them to build `snapshot.json` with desk-tasks `scripts/snapshot.cjs` (input `raw`, this `run_id`, actual offset ISO `as_of` after reads, verified `mode`, and the required live target/source receipts when mode is live). Read all required tabs as defined there; never publish partial reads or unpruned exports. When Settings `dashboard_link` is set, update only `snapshot.json` on that same private artifact and URL, leaving `index.html` untouched. Read back exact `run_id` and `as_of`; otherwise report “Published but unverified” only to the owner as data repair and reconcile before retrying. Never recreate or duplicate the page. Blank link means owner setup needed, never create one unattended. Dry runs and previews only build and verify locally, with no publication, Settings writes or messages. Keep live intermediate files outside the repo. A saved scheduled prompt needs its own owner update.
+
+Live override (Andie, Nov 21): run the normal inbox/Intake collection and logging, task and Calendar checks, Meta Campaign refresh, Review/data repairs, and report/dashboard refresh under existing rules. Gmail reads remain allowed for configured collection/reconciliation. No Gmail write tools are enabled: no sending, replying, forwarding, drafts, labels or trash. Internal new-lead, follow-up-alert and summary-email content goes to the owner run log and existing dashboard/Today chat surfaces; never invent tasks or delivery receipts for disabled messages. The live header wins over every delivery section above.
+
+Before building pages, incorporate this run’s verified append/update read-backs into the in-memory tab data, or narrowly reread only changed tabs. Build both pages from the final verified state, including newly logged leads and task changes. Set as_of/provenance to the last completed read time; reuse reads and read-backs rather than doing another full-tab pass.

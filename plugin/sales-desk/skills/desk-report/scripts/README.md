@@ -23,6 +23,8 @@ node reports/build.js --snapshot snapshot.json --narrative narrative.json --prev
   [--buyers B003,B010] [--custom spend-vs-closings]
 ```
 
+Live calls must add `--target work/target.json --provenance work/provenance.json` to both commands. The independent target is `{mode:"live",sheet_id:<fresh verified pinned/configured live sheet ID>}`; the actual completed read receipt is `{kind:"sheet",origin:"google-sheets",mode:"live",sheet_id:<actual ID>,status:"ok",retrieved_at:<offset ISO>}`. The snapshot's sheet source_id must match that ID, and sheet retrieved_at/as_of must match the receipt. API builds require the same `target` and `provenance` arguments. Missing/mixed receipts, seed/fixture/training origins or input paths, known old destinations stop before writes. Live calls never load the seed adapter. Metric logic and forbidden-field/contact protections remain unchanged. Names and ordinary record IDs do not establish provenance.
+
 `--narrative none` renders pages without narrative. With no `--snapshot`, the build uses the training seed, the training narrative, buyer B003, and the custom report. Any failure exits non-zero and writes nothing: an invalid or failed snapshot, a narrative check, a privacy finding, or a card check.
 
 Screenshots, layout checks, keyboard drawer, partner search, stale banner, and card rendering (dev only; Playwright lives outside the shipped files):
@@ -36,7 +38,7 @@ PLAYWRIGHT_DIR=<dir with node_modules/playwright> [CHROMIUM=<chrome-headless-she
 1. Claude exports the allowed sheet fields to a snapshot (`sales-desk-snapshot-v1`, the shape `adapters/seed.js` produces for training). The model rejects any field outside the contract in `metrics.js` (`SNAPSHOT_FIELDS`, `TAB_FIELDS`, `SETTINGS_FIELDS`, `PROPERTY_FIELDS`, `BRAND_TOKEN_FIELDS`, `SOURCE_ROW_FIELDS`). It also stops the run on a failed or missing sheet source, a missing tab, or an empty Units tab.
 2. `--compute-only` writes `report-data.json`. Claude writes the narrative against its metric keys using `{{metric:<report>.<metric>}}` references.
 3. The render call validates the narrative and renders every page. It then runs the privacy guard on each page's embedded data and visible text, scans visible text for record identifiers, and checks each card on its own. Card captions come only from scope, period, and date, never from narrative.
-4. Claude publishes `out/public/` together. `status.json` holds only `run_id` (an opaque random token) and `as_of`, so a deployment can be verified outside Access.
+4. Claude publishes `out/public/` together. `status.json` holds only `run_id` (an opaque random token) and `as_of`. The privacy-scanned `source.json` companion holds only mode, sheet_id and the same run_id/as_of; publish and read back both together. Before training updates, publication-target.cjs verifies both existing and newly built source metadata against the exact training sheet.
 
 ## Files
 

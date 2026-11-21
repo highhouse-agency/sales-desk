@@ -5,7 +5,7 @@ description: Set up or resume the training/live sales desk, repair missing setup
 
 # desk-setup
 
-Rules version: 2026-11-20. A mismatch with desk stops writes.
+Rules version: 2026-11-21. A mismatch with desk stops writes.
 
 Follow desk first, especially the pinned-sheet boundary. Pinned access permits only that sheet/calendar and Settings drive_folder for original-source retention. Never search Drive or access other files/folders/calendars. The pinned calendar wins; discrepancies are owner-only data repairs. Inaccessibility uses desk's exact stop message. Setup/training title searches are allowed only without a pinned link.
 
@@ -65,17 +65,17 @@ Training uses Mode: training. Do not invent a missing calendar ID. Identity remo
 ## 7. Morning task
 Owner only; verify OCN account `andie@highhouseagency.com`. Gmail absence skips inbox/email, retains pending alerts; sent-mail proof is required to claim delivery.
 
-Find existing Sales desk morning run (or have owner check Scheduled). Compare sheet link, rules version, time/cadence and explain edits; never duplicate. Otherwise use routine-prompt.md with exact Desk sheet link. Owner schedules manually first through Scheduled, New task, Set up manually. Training stays manual. If tools cannot create it, supply prompt with click instructions.
+Find existing Sales desk morning run (or have owner check Scheduled). Compare sheet link, rules version, time/cadence and explain edits; never duplicate. Otherwise use `${CLAUDE_SKILL_DIR}/assets/morning-run-live.md` for live setup with the exact verified live sheet link; include the bundled routine-prompt.md body. The canonical repo copy is routines/morning-run-live.md. Owner schedules manually first through Scheduled, New task, Set up manually. Training stays manual. If tools cannot create it, supply prompt with click instructions.
 
 Owner runs once to allow required tools for all tasks, leaving Meta change tools blocked. If unavailable, Team owner enables Always allow in organization Cowork permissions. Verify configured desk connections only, never unrelated plugins. A second unattended manual run must ask nothing before live switches to Daily at confirmed time/zone. Mark done only after owner's confirmation. Pinned work stays within the source-retention folder; other Drive/report access remains pending.
 
 ## 7a. Task calendar and dashboard
 Optional; training skips unless requested. Read pinned calendar directly, otherwise configured calendar. Without pin/calendar, owner may provide existing ID or create/share a calendar in Google Calendar settings with task owners allowed changes; never create/share without yes. Fill blank task_calendar, verify. Each person accepts invitation, checks calendar and phone notifications. Compare their display zone against an approved practice appointment; local display difference alone is not a wrong instant. Owner guests receive reminders.
 
-Follow desk-tasks for the one private team dashboard. Only the desk owner provides an existing private dashboard URL or first publishes, then saves `dashboard_link` under desk-tasks. Viewers use that URL and their own Google connector, read access only. Verify private view-only access; owner uses Share. Existing URLs update in place; failures need repair.
+Follow desk-tasks for the one private team dashboard. Only the desk owner provides an existing private dashboard URL or first publishes, then saves `dashboard_link` under desk-tasks. Viewers use that same URL and its published viewing data, including named external Pro viewers without a Google connection. First publish includes index.html and snapshot.json under desk-tasks; morning updates snapshot.json only and verifies run_id/as_of. Verify private page access and named people’s edit access; owner uses Share. Each desk user’s explicit dashboard or report request refreshes the saved page under its skill, with verified read-back. Existing URLs update in place; failures need repair.
 
 ## 8. Reports
-Follow desk-report for one private multi-file report artifact. Only the desk owner provides an existing private report URL or first publishes, then saves `report_artifact` under desk-report. Read/verify each provided URL opens the right page; preview Save / Change / Cancel and read back Settings. Existing URLs update in place; failures need repair. Morning never creates; blank skips publication. Preserve existing values. Verify sharing/access.
+Follow desk-report for one private multi-file report artifact. Only the desk owner provides an existing private report URL or first publishes, then saves `report_artifact` under desk-report. Read/verify each provided URL opens the right page; preview Save / Change / Cancel and read back Settings. Existing URLs update in place; failures need repair. Morning never creates; blank skips publication. Preserve existing values. Select **Can edit** for each named person on both the dashboard and report pages; verify access.
 
 ## 9. Check and finish
 1. Read exact sheet/Settings/open Review. Ensure personal project lines above. Nonoperator authenticated task owners checking only own dashboard skip the general logging test in steps 2 to 4; no general logging permission. Shared dashboard setup follows 7a.

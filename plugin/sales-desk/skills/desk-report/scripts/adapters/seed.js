@@ -8,7 +8,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { redact } from '../lib/privacy.js';
+import sanitizer from '../lib/sanitize.cjs';
 import { TAB_FIELDS, unitAreas } from '../lib/metrics.js';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -41,7 +41,7 @@ export function parseCsv(text) {
 }
 
 // Sanitization shares the publication guard's detector (lib/privacy.js).
-export function sanitizeText(v) { return redact(v); }
+export function sanitizeText(v) { return sanitizer.sanitizeFreeText(v); }
 export function opaqueKey(key) {
   if (!key) return null;
   return 'sk_' + createHash('sha256').update(String(key)).digest('hex').slice(0, 16);

@@ -64,8 +64,10 @@ export function visibleText(html) {
   return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<svg[\s\S]*?<\/svg>/gi, ' ').replace(/<[^>]+>/g, ' ');
 }
 
-export function scanIds(html, where) {
-  const m = visibleText(html).match(RECORD_ID);
+export function scanIds(html, where, knownUnitIds = []) {
+  const physicalUnits = new Set(knownUnitIds);
+  const text=visibleText(html);
+  const m = [...text.matchAll(new RegExp(RECORD_ID.source, 'g'))].find(match => !physicalUnits.has(match[0]) || /\b(?:buyer|task|partner|campaign|review|interaction|record)(?:\s+(?:id|identifier))?\s*[:#]?\s*$/i.test(text.slice(Math.max(0,match.index-30),match.index)));
   return m ? [{ path: where, kind: `record identifier ${m[0]} in visible text` }] : [];
 }
 

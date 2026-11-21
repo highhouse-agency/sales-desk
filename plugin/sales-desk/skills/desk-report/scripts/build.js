@@ -23,7 +23,9 @@ import { REPORTS, TEMPLATE_VERSION, projectForPage, renderPage, pathOf, reportId
 import { scanData, scanPageText, scanIds, checkCard, checkStatus, PrivacyError } from './lib/privacy.js';
 import { makeCtx } from './templates/components.js';
 import { cardSvg } from './lib/card.js';
-import { seedSnapshot } from './adapters/seed.js';
+import liveTarget from './lib/live-target.cjs';
+import publicationTarget from './lib/publication-target.cjs';
+import sanitizer from './lib/sanitize.cjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const STANDING = ['sales-pulse', 'demand-and-ads', 'partner-network', 'unit-interest', 'owner-brief'];
@@ -32,8 +34,11 @@ const STANDING = ['sales-pulse', 'demand-and-ads', 'partner-network', 'unit-inte
 export class BuildError extends Error {}
 
 /** Compute report-data.json (without narrative) from a snapshot. */
-export function computeReportData(snapshot, { previous = null, buyers = [], customs = [], runId } = {}) {
-  const model = M.buildModel(snapshot);
+export function computeReportData(snapshot, { previous = null, buyers = [], customs = [], runId, target, provenance } = {}) {
+  liveTarget.assertLiveTarget({mode:snapshot.mode,target,provenance,content:snapshot});
+  if(snapshot.mode==='training'&&provenance&&(provenance.mode!=='training'||provenance.sheet_id!==publicationTarget.TRAINING_SHEET||provenance.status!=='ok'||provenance.origin!=='google-sheets'))throw new BuildError('Training source receipt does not match the training sheet and read time.');
+  if(snapshot.mode==='live'&&(!snapshot.sources?.some(s=>s.kind==='sheet')||snapshot.sources.filter(s=>s.kind==='sheet').some(s=>s.source_id!==target.sheet_id||s.retrieved_at!==provenance.retrieved_at)||snapshot.as_of!==provenance.retrieved_at))throw new BuildError('Live export source must match its sheet read receipt and completed time.');
+  const model = M.buildModel(sanitizer.sanitizeReportSnapshot(snapshot));
   const known = new Set(model.entities.buyers.map((b) => b.person_id));
   for (const b of buyers) if (!known.has(b)) throw new BuildError(`buyer brief requested for unknown buyer ${b}`);
   for (const c of customs) if (!REPORTS[`custom.${c}`]) throw new BuildError(`custom report ${c} is not in the registry; add its rule and tests before requesting it`);
@@ -71,7 +76,7 @@ export function computeReportData(snapshot, { previous = null, buyers = [], cust
   return {
     schema_version: 'sales-desk-report-v1',
     schema: model.schema,
-    meta: { ...model.meta, run_id: run, computed_at: new Date().toISOString(), template_version: TEMPLATE_VERSION,
+    meta: { ...model.meta, sheet_id: provenance?.sheet_id || snapshot.sources.find(s=>s.kind==='sheet')?.source_id, run_id: run, computed_at: new Date().toISOString(), template_version: TEMPLATE_VERSION,
       comparison_as_of: changes.previous_as_of, snapshot_stale_hours: model.scope.settings.snapshot_stale_hours },
     scope: { ...model.scope, currency: 'USD', unit_counts: { total: c.development_total, tracked: c.tracked, historical: c.sold_before_tracking },
       limitations: model.diagnostics.filter((d) => d.level !== 'info').map((d) => ({ code: d.code, ref: d.ref })) },
@@ -134,7 +139,7 @@ export async function renderAll(rd) {
     findings.push(...scanData(data, r.path));
     const html = await renderPage(data, r.key);
     findings.push(...scanPageText(html).map((f) => ({ ...f, path: `${r.path} ${f.path}` })));
-    findings.push(...scanIds(html, r.path));
+    findings.push(...scanIds(html, r.path, data.entities.units.map(u=>u.unit_id)));
     // The card is checked on its own: it can be forwarded outside the protected site.
     const cardCtx = makeCtx(data, r.key);
     const names = [...rd.entities.buyers.map((b) => b.name), ...rd.entities.partners.map((p) => p.name)];
@@ -150,18 +155,29 @@ export async function renderAll(rd) {
 }
 
 /** The compute step: report-data.json for Claude to write the narrative against, privacy-scanned. */
-export function computeOnly({ snapshot, previous = null, outDir, buyers = [], customs = [], write = true }) {
-  const rd = computeReportData(snapshot, { previous, buyers, customs });
+export function computeOnly({ snapshot, previous = null, outDir, buyers = [], customs = [], write = true, target, provenance, inputPaths=[] }) {
+  liveTarget.assertLiveTarget({mode:snapshot.mode,target,provenance,content:{snapshot,previous},paths:inputPaths});
+  const rd = computeReportData(snapshot, { previous, buyers, customs, target, provenance });
   const findings = scanData(rd, 'report-data.json');
   if (findings.length) throw new PrivacyError(findings);
   if (write) { mkdirSync(join(outDir, 'data'), { recursive: true }); writeFileSync(join(outDir, 'data', 'report-data.json'), JSON.stringify(rd, null, 1)); }
   return rd;
 }
 
-export async function build({ snapshot, narrative, previous = null, outDir, buyers = [], customs = [], write = true }) {
-  let rd = computeReportData(snapshot, { previous, buyers, customs });
+export async function build({ snapshot, narrative, previous = null, outDir, buyers = [], customs = [], write = true, target, provenance, inputPaths=[] }) {
+  liveTarget.assertLiveTarget({mode:snapshot.mode,target,provenance,content:{snapshot,narrative,previous},paths:inputPaths});
+  let rd = computeReportData(snapshot, { previous, buyers, customs, target, provenance });
   rd = applyNarrative(rd, narrative);
   const files = await renderAll(rd);
+  const sheet_id=provenance?.sheet_id||snapshot.sources.find(s=>s.kind==='sheet')?.source_id;
+  const source=publicationTarget.sourceManifest({mode:snapshot.mode,sheet_id,run_id:rd.meta.run_id,as_of:rd.meta.as_of});
+  const sourceFindings=scanData(source,'source.json');if(sourceFindings.length)throw new PrivacyError(sourceFindings);
+  files.push({path:join('public','source.json'),content:JSON.stringify(source)+'\n'});
+  if(snapshot.mode==='live')for(const file of files){
+    if(file.path.endsWith('.html'))file.content=file.content.replaceAll('Training data, invented','');
+    if(liveTarget.BLOCKED.some(id=>file.content.includes(id))||/Training data, invented|>Practice<|>Fictional</i.test(file.content))throw new BuildError('Live output retained a non-live label or destination.');
+    liveTarget.scanLive(file.path.endsWith('.json')?JSON.parse(file.content):file.content.replace(/<script[\s\S]*?<\/script>/gi,'').replace(/<style[\s\S]*?<\/style>/gi,''));
+  }
   if (write) {
     for (const f of files) {
       const p = join(outDir, f.path);
@@ -180,23 +196,29 @@ function arg(name, fallback) {
 async function main() {
   const snapPath = arg('snapshot', null);
   const training = !snapPath;
-  const snapshot = training ? seedSnapshot() : JSON.parse(readFileSync(snapPath, 'utf8'));
+  const targetPath=arg('target',null),provenancePath=arg('provenance',null);
+  const target=targetPath?JSON.parse(readFileSync(targetPath,'utf8')):undefined;
+  const provenance=provenancePath?JSON.parse(readFileSync(provenancePath,'utf8')):undefined;
+  if(target?.mode==='live')liveTarget.checkPaths([snapPath,targetPath,provenancePath,arg('narrative',null),arg('previous',null)]);
+  if(training&&target?.mode==='live')throw new BuildError('Live builds require an explicit completed sheet export.');
+  const snapshot = training ? (await import('./adapters/seed.js')).seedSnapshot() : JSON.parse(readFileSync(snapPath, 'utf8'));
   const narrArg = arg('narrative', training ? resolve(HERE, 'fixtures/narrative-training.json') : 'none');
   const narrative = narrArg === 'none' ? null : JSON.parse(readFileSync(narrArg, 'utf8'));
   const prevArg = arg('previous', 'none');
   const previous = prevArg && prevArg !== 'none' && existsSync(prevArg) ? JSON.parse(readFileSync(prevArg, 'utf8')) : null;
   if (prevArg && prevArg !== 'none' && !previous) throw new BuildError(`previous report data not found: ${prevArg}`);
+  const inputPaths=[snapPath,targetPath,provenancePath,narrArg,prevArg];
   const outDir = resolve(arg('out', resolve(HERE, 'out')));
   const list = (v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : []);
   const buyers = list(arg('buyers', training ? 'B003' : ''));
   const customs = list(arg('custom', training ? 'spend-vs-closings' : ''));
   if (training) { mkdirSync(join(outDir, 'data'), { recursive: true }); writeFileSync(join(outDir, 'data', 'snapshot-training.json'), JSON.stringify(snapshot, null, 1)); }
   if (process.argv.includes('--compute-only')) {
-    const rd = computeOnly({ snapshot, previous, outDir, buyers, customs });
+    const rd = computeOnly({ snapshot, previous, outDir, buyers, customs, target, provenance, inputPaths });
     process.stdout.write(`Computed ${rd.reports.length} reports for ${rd.meta.run_id} (as of ${rd.meta.as_of}) into ${join(outDir, 'data', 'report-data.json')}\n`);
     return;
   }
-  const { rd, files } = await build({ snapshot, narrative, previous, outDir, buyers, customs });
+  const { rd, files } = await build({ snapshot, narrative, previous, outDir, buyers, customs, target, provenance, inputPaths });
   process.stdout.write(`Built ${files.filter((f) => f.path.endsWith('.html')).length} pages for ${rd.meta.run_id} (as of ${rd.meta.as_of}) into ${outDir}\n`);
   for (const f of files) process.stdout.write(`  ${f.path}\n`);
 }

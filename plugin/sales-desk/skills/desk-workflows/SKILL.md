@@ -5,7 +5,7 @@ description: Manage buyer readiness, accepted sales handoffs, visit requests, bo
 
 # desk-workflows
 
-Rules version: 2026-11-20. If the desk skill shows a different version, say so and make no writes.
+Rules version: 2026-11-21. If the desk skill shows a different version, say so and make no writes.
 
 Follow desk for access, identity, columns, one approved Save and Undo; desk-log owns matching, cards, source retention, add-only writing, missing-answer tasks, overrides and read-back. Desk-tasks owns Tasks and Calendar. Every operator question/task names the buyer and missing/conflicting sales fact in ordinary words, never history rows, tabs, Schema, IDs, formulas or receipts. Review questions also ban row and column. Misalignment, missing receipts, broken formulas and duplicate rows go to Review with `reason=data repair`, assigned to Settings `desk_owner`, reported only to that owner. Exclude repairs from operator Today, morning lists, dashboard and Tasks.
 

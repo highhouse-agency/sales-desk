@@ -130,7 +130,7 @@ function toNum(v) {
 }
 
 export function parseExceptions(raw) {
-  // Exact form "B013: 3.5%", several separated by semicolons. Malformed or conflicting -> unknown.
+  // Exact buyer identifier followed by a colon and percentage; entries separated by semicolons. Malformed or conflicting -> unknown.
   if (blank(raw)) return { status: 'none', map: {} };
   const map = {};
   for (const part of String(raw).split(';')) {

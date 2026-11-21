@@ -5,7 +5,7 @@ description: Turn sales desk input into confirmed saves. Use for voice notes, tr
 
 # desk-log
 
-Rules version: 2026-11-20. If `desk` shows a different version, say so and make no writes.
+Rules version: 2026-11-21. If `desk` shows a different version, say so and make no writes.
 
 Follow `desk` first for sheet discovery, Settings, Properties, Schema, operator authority and conversation caching. Propose, confirm, append history, update current facts, read back, then report. Never claim success before verification.
 
@@ -22,7 +22,7 @@ Follow `desk` first for sheet discovery, Settings, Properties, Schema, operator 
 
 Use chat with bold header/labels, never a code block, table, boxed card, artifact or monospaced layout. New buyers and updates changing three or more facts use the full preview. Smaller existing-buyer updates use one sentence plus questions/effects and the save prompt. Label existing versus new explicitly.
 
-The header is **New buyer: Daniel and Marisol Reyes** · <lead ID>. Replace the angle-bracket instruction with the real next ID computed from People and the confirmed/proposed first-contact date. Existing buyers use only their saved People `lead_id`; omit it when absent. Never print placeholder or guessed IDs. Lead IDs appear only here and in Details.
+The header is **New buyer: Daniel and Marisol Reyes** · <lead ID>. Replace the angle-bracket instruction with the real next ID computed from People and the confirmed/proposed first-contact date. Existing buyers use only their saved People `lead_id`; omit it when absent. Never print placeholder or guessed IDs. Lead IDs appear only here, never on the dashboard.
 
 Use these fact lines in this exact order, with bold labels: **Contact**, **Heard about OCN**, **First contact**, **Profile**, **Interested in**, **Budget**, **Matches**, **Next step**, **Owner**. Contact always appears, using “not given yet” when missing; omit other empty facts. Put timing in Profile. Heard about OCN is acquisition source; First contact is how/date/logger. Profile combines supplied background and confirmed intended use. Interested in contains only buyer statements. Matches is always labelled “suggestion” and never saved as buyer interest. Budget shows parsed amount and currency. Quote only current Units prices. Next step states action, buyer, responsible person and date; a proposed booking says “on the calendar when you save”. Mark proposed values visibly. Owner shows the saved owner or supported proposed name, without a question mark. Additional approved effects, including override clearing, follow in plain sales language. Exclude connector details, ad IDs, budget flags and retention gaps from previews.
 

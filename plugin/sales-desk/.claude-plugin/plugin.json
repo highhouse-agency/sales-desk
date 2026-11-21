@@ -1,7 +1,7 @@
 {
   "name": "sales-desk",
   "displayName": "Sales desk",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Keeps the OCN sales desk's records in a Google Sheet. Tell it about buyers in voice notes, screenshots, emails or a few typed words; it saves confirmed rows, keeps tasks on the team calendar, and builds reports.",
   "author": {
     "name": "Sales desk kit"
